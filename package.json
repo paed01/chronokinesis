@@ -1,0 +1,21 @@
+{
+  "name": "chronokinesis",
+  "version": "1.0.0",
+  "description": "Control time",
+  "main": "index.js",
+  "repository": "git://github.com/paed01/chronokinesis",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "date",
+    "mock",
+    "test"
+  ],
+  "author": "Pal Edman <pal.edman@outlook.com>",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "code": "^2.1.0",
+    "lab": "^10.2.0"
+  }
+}
