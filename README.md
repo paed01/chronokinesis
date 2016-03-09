@@ -1,6 +1,8 @@
 chronokinesis
 =============
 
+[![Build Status](https://travis-ci.org/paed01/chronokinesis.svg?branch=master)](https://travis-ci.org/paed01/chronokinesis)
+
 ## Description
 
 This module mocks `Date` and `Date.now` in order to help you test time-dependent code.
