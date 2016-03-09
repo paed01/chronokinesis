@@ -5,7 +5,6 @@ node_js:
 sudo: false
 env:
   global:
-   - NODE_COVERALLS_DEBUG=1
    - secure: kFCZ63SIs9HFpW0ck8jD2cDQoqOBJEe2j99RR8Ay1msH8EK9Qdwrk9DaMTiBT/NR9EUNUgLIqBuDzqhYELohdJ4udg9gzzbU+TMkik+O/8Dr0yBBmOizf81gfFxbu35Um6rTq0J70e9TuW4Lj/OWA4hQF5xkYTBj3mIQITrOrG+TUPrPpCei3Nr1gt8i1fGMe8cD5rmDMUyw6Y0l9COIHo2cc9Une+uSdt8Cp/Nf6PH00D3B0Bp1/NqPrTrVVsh/Wqmc/yhosFrzMYWDFclVg2kFwJzsAc/HOpmCSgCpVRCxnhl0k1tiQhQp9y9T9CJF6rkZR15X9iNE021MAcoE6PyjVRLykcgzZ+VQMzut3PQOlDmSWwKOBfm1RP9Uq+eFVv+I+lO2APJxRWNXQHsOswECqsXyYF4YwYQ7pMCbV441IBZZhtT7zfcrSgdiHjcWvIeRD8zpS9QG+/6kPGc5c4rOsqwmGnkB4AcnKm2E9E2/823G0IMmXJYW9vHBwNEv0UpY1gKy7qpO2q0GT60/VSZbuKqBWwUtWxR8SBRhQJfw3wiMAdRRp9cBM0p/papiIP7aEiHjb5HltmzRIksGTzh7e/SQzfqxDyard3c7NV7vFWpf6oRiQnoKi5hSXm25F53lLu6SEvRVhWlXSOJwwXjs7WHgsO+UaklfJ2oaqJw=
 after_success:
-- cat coverage.lcov | ./node_modules/coveralls/bin/coveralls.js
+- cat coverage.lcov | ./node_modules/coveralls/bin/coveralls.js --verbose

@@ -2,10 +2,21 @@
   "name": "chronokinesis",
   "version": "1.0.0",
   "description": "Freeze or travel in time",
+  "author": "Pal Edman <pal.edman@outlook.com>",
+  "license": "BSD-3-Clause",
   "main": "index.js",
-  "repository": "git://github.com/paed01/chronokinesis",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/paed01/chronokinesis"
+  },
+  "engines": {
+    "node": ">=4"
+  },
   "scripts": {
     "test": "make test-cov-lcov"
+  },
+  "bugs": {
+    "url": "https://github.com/paed01/chronokinesis/issues"
   },
   "keywords": [
     "date",
@@ -16,8 +27,6 @@
     "travel",
     "hiro"
   ],
-  "author": "Pal Edman <pal.edman@outlook.com>",
-  "license": "BSD-3-Clause",
   "devDependencies": {
     "code": "^2.1.0",
     "coveralls": "^2.11.8",
