@@ -6,3 +6,4 @@ temp/
 *.bat
 .env
 .eslintcache
+coverage*

@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+- "4"
+- "5"
+#env:
+#  global:
+#     - secure: bK6mlRIRM7uQM6FmOhYomgs87GR51xcPQreZRzR5YsUawpHe2NS2gi/5V6Lq6nrKZcd5lDoLF2RH4aIfav+XoADnU+nyn7qr/8UVnoEfyI4ZdgfDaDV/ICSU5UwJXD/hjODkM50ebkv60DQ9nksk0l/FTdEjGsCtvp2sKRhLG20=
+#after_script:
+#- cat coverage.lcov | ./node_modules/coveralls/bin/coveralls.js
+
+sudo: false

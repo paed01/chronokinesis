@@ -5,17 +5,22 @@
   "main": "index.js",
   "repository": "git://github.com/paed01/chronokinesis",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "make test-cov-lcov"
   },
   "keywords": [
-    "date",
     "mock",
-    "test"
+    "test",
+    "date",
+    "time",
+    "freeze",
+    "travel",
+    "hiro"
   ],
   "author": "Pal Edman <pal.edman@outlook.com>",
   "license": "BSD-3-Clause",
   "devDependencies": {
     "code": "^2.1.0",
+    "coveralls": "^2.11.8",
     "lab": "^10.2.0"
   }
 }
