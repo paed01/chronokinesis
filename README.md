@@ -1,7 +1,7 @@
 chronokinesis
 =============
 
-[![Build Status](https://travis-ci.org/paed01/chronokinesis.svg?branch=master)](https://travis-ci.org/paed01/chronokinesis)
+[![Build Status](https://travis-ci.org/paed01/chronokinesis.svg?branch=master)](https://travis-ci.org/paed01/chronokinesis) [![Coverage Status](https://coveralls.io/repos/github/paed01/chronokinesis/badge.svg?branch=master)](https://coveralls.io/github/paed01/chronokinesis?branch=master)
 
 ## Description
 
