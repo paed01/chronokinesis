@@ -3,6 +3,7 @@
 const expect = require('code').expect;
 const Lab = require('lab');
 const lab = exports.lab = Lab.script();
+const moment = require('moment');
 
 const ck = require('..');
 
@@ -68,6 +69,65 @@ lab.experiment('chronokinesis', () => {
         done();
       }, 10);
     });
+
+    lab.test('without arguments while time traveling freezes at traveled point in time', (done) => {
+      let traveledTo = ck.travel(1982, 5, 25, 10, 10, 10, 10);
+      let freeze = ck.freeze();
+
+      setTimeout(() => {
+        expect(freeze.getTime()).to.be.about(traveledTo.getTime(), 1000);
+        done();
+      }, 10);
+    });
+
+    lab.test('with arguments while time traveling freezes at defined time', (done) => {
+      ck.travel(1982, 5, 25, 10, 10, 10, 10);
+      let freeze = ck.freeze(1980, 0, 1);
+
+      setTimeout(() => {
+        expect(freeze.getTime()).to.be.about(freeze.getTime(), 1000);
+        done();
+      }, 10);
+    });
+
+    lab.test('with FakeDate', (done) => {
+      let traveled = ck.travel(1982, 5, 25, 10, 10, 10, 10);
+      let freeze = ck.freeze(new Date());
+
+      setTimeout(() => {
+        expect(freeze.getTime()).to.be.about(traveled.getTime(), 1000);
+        done();
+      }, 10);
+    });
+  });
+
+  lab.experiment('#defrost', () => {
+    lab.afterEach(ck.reset);
+
+    lab.test('starts ticking but is still in timekeeping mode', (done) => {
+      let freeze = ck.freeze(1980, 1, 1);
+
+      ck.defrost();
+
+      setTimeout(() => {
+        expect((new Date()).getTime()).to.be.above(freeze.getTime());
+        expect(ck.isKeepingTime()).to.be.true();
+        done();
+      }, 10);
+    });
+
+    lab.test('starts ticking traveled time', (done) => {
+      ck.freeze(1982, 5, 25);
+      let traveled = ck.travel(1982, 5, 25, 10, 10, 10, 10).getTime();
+
+      ck.defrost();
+
+      setTimeout(() => {
+        expect((new Date()).getTime()).to.be.above(traveled);
+        expect((new Date()).getTime()).to.be.about(traveled, 1000);
+        done();
+      }, 10);
+    });
   });
 
   lab.experiment('#travel', () => {
@@ -108,6 +168,11 @@ lab.experiment('chronokinesis', () => {
       ck.travel('1970-01-01T01:01:01Z');
 
       expect((new Date()).getUTCFullYear()).to.be.equal(1970);
+
+      ck.travel(1980, 11, 24);
+
+      expect((new Date()).getUTCFullYear()).to.be.equal(1980);
+
       done();
     });
 
@@ -127,6 +192,26 @@ lab.experiment('chronokinesis', () => {
 
       setTimeout(() => {
         expect(Date.now()).to.be.above(dateObj.getTime());
+        done();
+      }, 10);
+    });
+
+    lab.test('frozen time refreezes time', (done) => {
+      ck.freeze(1981, 5, 19);
+      let traveledTo = ck.travel(1982, 5, 25, 10, 10, 10, 10);
+
+      setTimeout(() => {
+        expect((new Date()).getTime()).to.equal(traveledTo.getTime());
+        done();
+      }, 10);
+    });
+
+    lab.test('with FakeDate', (done) => {
+      let freeze = ck.freeze(1980, 0, 1);
+      let traveled = ck.travel(new Date());
+
+      setTimeout(() => {
+        expect(traveled.getTime()).to.equal(freeze.getTime());
         done();
       }, 10);
     });
@@ -169,7 +254,7 @@ lab.experiment('chronokinesis', () => {
       done();
     });
 
-    lab.test('resets travelled time', (done) => {
+    lab.test('resets traveled time', (done) => {
       let dateObj = new Date();
       let year = dateObj.getUTCFullYear() + 2;
       dateObj.setUTCFullYear(year);
@@ -267,7 +352,6 @@ lab.experiment('chronokinesis', () => {
         expect(utcDate.getUTCFullYear()).to.equal(1982);
         done();
       });
-
     });
 
     lab.experiment('prototype', () => {
@@ -325,6 +409,102 @@ lab.experiment('chronokinesis', () => {
 
         done();
       });
+    });
+  });
+
+  lab.experiment('Other time dependant functionality', () => {
+    let isReset = false;
+    lab.beforeEach((done) => {
+      isReset = false;
+      done();
+    });
+
+    lab.afterEach((done) => {
+      ck.reset(() => {
+        isReset = true;
+        done();
+      });
+    });
+
+    lab.experiment('setTimeout', () => {
+      lab.test('has expected behavior', (done) => {
+        ck.freeze();
+        setTimeout(() => {
+          expect(isReset).to.be.false();
+          done();
+        }, 10);
+      });
+    });
+
+    lab.experiment('setImmediate', () => {
+      lab.test('has expected behavior', (done) => {
+        ck.freeze();
+        setImmediate(() => {
+          expect(isReset).to.be.false();
+          done();
+        });
+      });
+    });
+
+    lab.experiment('setInterval', () => {
+      lab.test('has expected behavior', (done) => {
+        ck.freeze();
+
+        let count = 2;
+        let ptr;
+        function atInterval() {
+          if (count === 0) {
+            clearInterval(ptr);
+            done();
+          }
+
+          expect(isReset).to.be.false();
+
+          count--;
+        }
+
+        ptr = setInterval(atInterval, 10);
+      });
+    });
+  });
+
+  lab.experiment('moment', () => {
+    lab.afterEach(ck.reset);
+
+    lab.test('frozen format has expected behavior', (done) => {
+      ck.freeze(1980, 0, 1);
+      setTimeout(() => {
+        expect(moment().format('YYYY-MM-DD')).to.equal('1980-01-01');
+        done();
+      }, 10);
+    });
+
+    lab.test('traveled format has expected behavior', (done) => {
+      ck.travel(1981, 0, 1);
+      setTimeout(() => {
+        expect(moment().format('YYYY-MM-DD')).to.equal('1981-01-01');
+        done();
+      }, 10);
+    });
+
+    lab.test('travels when used as argument', (done) => {
+      let date = moment().add(7, 'days');
+
+      ck.travel(date);
+
+      expect((new Date()).getTime()).to.be.about(date.valueOf(), 1000);
+      done();
+    });
+
+    lab.test('freezes when used as argument', (done) => {
+      let date = moment().subtract(1, 'day');
+
+      ck.freeze(date);
+
+      setTimeout(() => {
+        expect((new Date()).getTime()).to.equal(date.valueOf());
+        done();
+      }, 10);
     });
   });
 });

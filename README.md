@@ -10,6 +10,8 @@ Provides `travel` and `freeze` functionality for your Node.js tests.
 
 ## `#freeze`
 
+Freeze point in time. Can be used with arguments similar to the `Date` constructor.
+
 ```javascript
 const tk = require('chronokinesis');
 var time = new Date(1330688329321);

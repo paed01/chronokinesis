@@ -30,6 +30,7 @@
   "devDependencies": {
     "code": "^2.1.0",
     "coveralls": "^2.11.8",
-    "lab": "^10.2.0"
+    "lab": "^10.2.0",
+    "moment": "^2.12.0"
   }
 }

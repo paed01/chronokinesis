@@ -14,58 +14,29 @@ let freeze = null;
 let travel = null;
 let started = null;
 
-function FakeDate() {
-  var length = arguments.length;
-
-  if (!length && freeze) return new NativeDate(freeze);
-  if (!length && travel) return new NativeDate(time());
-
-  let args = Array.prototype.slice.call(arguments);
-  let date = new (Function.prototype.bind.apply(NativeDate, [null].concat(args)))();
-
-  return date;
-}
-
-function time() {
-  return travel + (NativeDate.now() - started);
-}
-
-FakeDate.UTC = NativeDate.UTC;
-FakeDate.parse = NativeDate.parse;
-
-FakeDate.prototype = NativeDate.prototype;
-FakeDate.prototype.constructor = NativeDate.constructor;
-
-FakeDate.now = function() {
-  if (freeze) return freeze.getTime();
-  return time();
+instance.freeze = function() {
+  useFakeDate();
+  freeze = instantiate(Date, arguments);
+  return freeze;
 };
 
-instance.freeze = function(date) {
-  useFakeDate();
-
-  if (!date) {
-    date = new NativeDate();
-  } else {
-    date = new NativeDate(date);
-  }
-
-  freeze = date;
-
-  return date;
+instance.defrost = function() {
+  freeze = null;
 };
 
-instance.travel = function(travelToDate) {
+instance.travel = function() {
   useFakeDate();
 
-  if (!travelToDate) {
-    travelToDate = new NativeDate();
-  } else {
-    travelToDate = new NativeDate(travelToDate);
-  }
+  let travelToDate = instantiate(Date, arguments);
 
   travel = travelToDate.getTime();
   started = NativeDate.now();
+
+  if (freeze) {
+    freeze = travelToDate;
+  }
+
+  return travelToDate;
 };
 
 instance.reset = function(callback) {
@@ -86,6 +57,37 @@ function useFakeDate() {
 
 function useNativeDate() {
   Date = NativeDate;
+}
+
+function FakeDate() {
+  var length = arguments.length;
+
+  if (!length && freeze) return new NativeDate(freeze);
+  if (!length && travel) return new NativeDate(time());
+
+  let date = instantiate(NativeDate, arguments);
+
+  return date;
+}
+
+function time() {
+  return travel + (NativeDate.now() - started);
+}
+
+FakeDate.UTC = NativeDate.UTC;
+FakeDate.parse = NativeDate.parse;
+
+FakeDate.prototype = NativeDate.prototype;
+FakeDate.prototype.constructor = NativeDate.constructor;
+
+FakeDate.now = function() {
+  if (freeze) return freeze.getTime();
+  return time();
+};
+
+function instantiate(type, args) {
+  let ctorArgs = Array.prototype.slice.call(args);
+  return new (Function.prototype.bind.apply(type, [null].concat(ctorArgs)))();
 }
 
 module.exports = instance;
