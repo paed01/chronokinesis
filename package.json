@@ -1,7 +1,7 @@
 {
   "name": "chronokinesis",
-  "version": "1.0.0",
-  "description": "Freeze or travel in time",
+  "version": "1.0.1",
+  "description": "Module for testing time-dependent code",
   "author": "Pal Edman <pal.edman@outlook.com>",
   "license": "BSD-3-Clause",
   "main": "index.js",
@@ -21,6 +21,7 @@
   "keywords": [
     "date",
     "time",
+    "fake",
     "mock",
     "test",
     "freeze",
@@ -28,9 +29,9 @@
     "hiro"
   ],
   "devDependencies": {
-    "code": "^2.1.0",
-    "coveralls": "^2.11.8",
-    "lab": "^10.2.0",
+    "code": "^2.1.1",
+    "coveralls": "^2.11.9",
+    "lab": "^10.3.0",
     "moment": "^2.12.0"
   }
 }
