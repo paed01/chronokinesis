@@ -78,7 +78,6 @@ FakeDate.UTC = NativeDate.UTC;
 FakeDate.parse = NativeDate.parse;
 
 FakeDate.prototype = NativeDate.prototype;
-FakeDate.prototype.constructor = NativeDate.constructor;
 
 FakeDate.now = function() {
   if (freeze) return freeze.getTime();

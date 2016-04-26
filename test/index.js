@@ -1,5 +1,7 @@
 'use strict';
 
+const _ = require('lodash');
+const NativeDate = Date;
 const expect = require('code').expect;
 const Lab = require('lab');
 const lab = exports.lab = Lab.script();
@@ -241,6 +243,31 @@ lab.experiment('chronokinesis', () => {
 
   lab.experiment('#reset', () => {
     lab.afterEach(ck.reset);
+
+    lab.test('resets Date to native Date', (done) => {
+      expect(Date).to.equal(NativeDate);
+      ck.freeze();
+      expect(Date).to.not.equal(NativeDate);
+
+      ck.reset();
+
+      expect(Date).to.equal(NativeDate);
+
+      expect(Date.constructor).to.equal(NativeDate.constructor);
+      expect(Date.constructor.prototype).to.equal(NativeDate.constructor.prototype);
+
+      expect(new Date()).to.be.instanceOf(NativeDate).and.not.a.function();
+
+      done();
+    });
+
+    lab.test('after reset in combination with lodash cloneDeep returns native Date', (done) => {
+      let content = _.assign(_.cloneDeep({
+        d: new Date()
+      }));
+      expect(content.d).to.not.be.a.function().and.instanceOf(NativeDate);
+      done();
+    });
 
     lab.test('resets frozen time', (done) => {
       let dateObj = new Date();
