@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = {
-  cloneDeep: require('lodash.cloneDeep'),
+  cloneDeep: require('lodash.clonedeep'),
   assign: require('lodash.assign')
 };
 const NativeDate = Date;
