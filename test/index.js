@@ -1,6 +1,9 @@
 'use strict';
 
-const _ = require('lodash');
+const _ = {
+  cloneDeep: require('lodash.clonedeep'),
+  assign: require('lodash.assign')
+};
 const NativeDate = Date;
 const expect = require('code').expect;
 const Lab = require('lab');
