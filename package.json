@@ -29,11 +29,11 @@
     "hiro"
   ],
   "devDependencies": {
-    "code": "^2.1.1",
+    "code": "^3.0.0",
     "coveralls": "^2.11.9",
-    "lab": "^10.3.0",
-    "lodash.assign": "^4.0.8",
+    "lab": "^10.7.0",
+    "lodash.assign": "^4.0.9",
     "lodash.clonedeep": "^4.3.2",
-    "moment": "^2.12.0"
+    "moment": "^2.13.0"
   }
 }
