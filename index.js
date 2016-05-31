@@ -27,7 +27,7 @@ instance.defrost = function() {
 instance.travel = function() {
   useFakeDate();
 
-  let travelToDate = instantiate(Date, arguments);
+  const travelToDate = instantiate(Date, arguments);
 
   travel = travelToDate.getTime();
   started = NativeDate.now();
@@ -60,12 +60,12 @@ function useNativeDate() {
 }
 
 function FakeDate() {
-  var length = arguments.length;
+  const length = arguments.length;
 
   if (!length && freeze) return new NativeDate(freeze);
   if (!length && travel) return new NativeDate(time());
 
-  let date = instantiate(NativeDate, arguments);
+  const date = instantiate(NativeDate, arguments);
 
   return date;
 }
@@ -85,7 +85,7 @@ FakeDate.now = function() {
 };
 
 function instantiate(type, args) {
-  let ctorArgs = Array.prototype.slice.call(args);
+  const ctorArgs = Array.prototype.slice.call(args);
   return new (Function.prototype.bind.apply(type, [null].concat(ctorArgs)))();
 }
 

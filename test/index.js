@@ -17,7 +17,7 @@ lab.experiment('chronokinesis', () => {
     lab.afterEach(ck.reset);
 
     lab.test('stops time', (done) => {
-      let now = new Date();
+      const now = new Date();
       ck.freeze(now);
       setTimeout(() => {
         expect((new Date()).getTime()).to.equal(now.getTime());
@@ -26,10 +26,10 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('can be used again', (done) => {
-      let now = new Date();
+      const now = new Date();
       ck.freeze(now);
 
-      let again = new Date('2015-12-12');
+      const again = new Date('2015-12-12');
 
       ck.freeze(again);
 
@@ -40,12 +40,12 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('is not affected when a date is manipulated', (done) => {
-      let now = new Date();
+      const now = new Date();
       ck.freeze(now);
 
       setTimeout(() => {
-        let dateObj = new Date();
-        let hour = dateObj.getUTCHours() + 1;
+        const dateObj = new Date();
+        const hour = dateObj.getUTCHours() + 1;
         dateObj.setUTCHours(hour);
 
         expect(dateObj.getUTCHours()).to.equal(hour);
@@ -58,7 +58,7 @@ lab.experiment('chronokinesis', () => {
     lab.test('when used without argument uses now', (done) => {
       ck.freeze();
 
-      let dateObj = new Date();
+      const dateObj = new Date();
 
       setTimeout(() => {
         expect((new Date()).getTime()).to.equal(dateObj.getTime());
@@ -67,7 +67,7 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('Date.now is frozen', (done) => {
-      let freezed = ck.freeze();
+      const freezed = ck.freeze();
 
       setTimeout(() => {
         expect(Date.now()).to.equal(freezed.getTime());
@@ -76,8 +76,8 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('without arguments while time traveling freezes at traveled point in time', (done) => {
-      let traveledTo = ck.travel(1982, 5, 25, 10, 10, 10, 10);
-      let freeze = ck.freeze();
+      const traveledTo = ck.travel(1982, 5, 25, 10, 10, 10, 10);
+      const freeze = ck.freeze();
 
       setTimeout(() => {
         expect(freeze.getTime()).to.be.about(traveledTo.getTime(), 1000);
@@ -87,7 +87,7 @@ lab.experiment('chronokinesis', () => {
 
     lab.test('with arguments while time traveling freezes at defined time', (done) => {
       ck.travel(1982, 5, 25, 10, 10, 10, 10);
-      let freeze = ck.freeze(1980, 0, 1);
+      const freeze = ck.freeze(1980, 0, 1);
 
       setTimeout(() => {
         expect(freeze.getTime()).to.be.about(freeze.getTime(), 1000);
@@ -96,8 +96,8 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('with FakeDate', (done) => {
-      let traveled = ck.travel(1982, 5, 25, 10, 10, 10, 10);
-      let freeze = ck.freeze(new Date());
+      const traveled = ck.travel(1982, 5, 25, 10, 10, 10, 10);
+      const freeze = ck.freeze(new Date());
 
       setTimeout(() => {
         expect(freeze.getTime()).to.be.about(traveled.getTime(), 1000);
@@ -110,7 +110,7 @@ lab.experiment('chronokinesis', () => {
     lab.afterEach(ck.reset);
 
     lab.test('starts ticking but is still in timekeeping mode', (done) => {
-      let freeze = ck.freeze(1980, 1, 1);
+      const freeze = ck.freeze(1980, 1, 1);
 
       ck.defrost();
 
@@ -123,7 +123,7 @@ lab.experiment('chronokinesis', () => {
 
     lab.test('starts ticking traveled time', (done) => {
       ck.freeze(1982, 5, 25);
-      let traveled = ck.travel(1982, 5, 25, 10, 10, 10, 10).getTime();
+      const traveled = ck.travel(1982, 5, 25, 10, 10, 10, 10).getTime();
 
       ck.defrost();
 
@@ -144,8 +144,8 @@ lab.experiment('chronokinesis', () => {
     lab.afterEach(ck.reset);
 
     lab.test('travels forwards', (done) => {
-      let dateObj = new Date();
-      let year = dateObj.getUTCFullYear() + 2;
+      const dateObj = new Date();
+      const year = dateObj.getUTCFullYear() + 2;
       dateObj.setUTCFullYear(year);
 
       ck.travel(dateObj);
@@ -155,8 +155,8 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('and backwards', (done) => {
-      let dateObj = new Date();
-      let year = dateObj.getUTCFullYear() - 2;
+      const dateObj = new Date();
+      const year = dateObj.getUTCFullYear() - 2;
       dateObj.setUTCFullYear(year);
 
       ck.travel(dateObj);
@@ -166,8 +166,8 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('with arguments', (done) => {
-      let dateObj = new Date();
-      let year = dateObj.getUTCFullYear() - 2;
+      const dateObj = new Date();
+      const year = dateObj.getUTCFullYear() - 2;
       dateObj.setUTCFullYear(year);
 
       ck.travel('1970-01-01T01:01:01Z');
@@ -189,8 +189,8 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('Date.now has traveled', (done) => {
-      let dateObj = new Date();
-      let year = dateObj.getUTCFullYear() - 3;
+      const dateObj = new Date();
+      const year = dateObj.getUTCFullYear() - 3;
       dateObj.setUTCFullYear(year);
 
       ck.travel(dateObj);
@@ -203,7 +203,7 @@ lab.experiment('chronokinesis', () => {
 
     lab.test('frozen time refreezes time', (done) => {
       ck.freeze(1981, 5, 19);
-      let traveledTo = ck.travel(1982, 5, 25, 10, 10, 10, 10);
+      const traveledTo = ck.travel(1982, 5, 25, 10, 10, 10, 10);
 
       setTimeout(() => {
         expect((new Date()).getTime()).to.equal(traveledTo.getTime());
@@ -212,8 +212,8 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('with FakeDate', (done) => {
-      let freeze = ck.freeze(1980, 0, 1);
-      let traveled = ck.travel(new Date());
+      const freeze = ck.freeze(1980, 0, 1);
+      const traveled = ck.travel(new Date());
 
       setTimeout(() => {
         expect(traveled.getTime()).to.equal(freeze.getTime());
@@ -265,7 +265,7 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('after reset in combination with lodash cloneDeep returns native Date', (done) => {
-      let content = _.assign(_.cloneDeep({
+      const content = _.assign(_.cloneDeep({
         d: new Date()
       }));
       expect(content.d).to.not.be.a.function().and.instanceOf(NativeDate);
@@ -273,11 +273,11 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('resets frozen time', (done) => {
-      let dateObj = new Date();
-      let year = dateObj.getUTCFullYear() + 2;
+      const dateObj = new Date();
+      const year = dateObj.getUTCFullYear() + 2;
       dateObj.setUTCFullYear(year);
 
-      let freeze = ck.freeze(dateObj);
+      const freeze = ck.freeze(dateObj);
       ck.reset();
       expect((new Date()).getUTCFullYear()).to.be.below(freeze.getUTCFullYear());
       expect(Date.now()).to.be.below(freeze.getTime());
@@ -285,8 +285,8 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('resets traveled time', (done) => {
-      let dateObj = new Date();
-      let year = dateObj.getUTCFullYear() + 2;
+      const dateObj = new Date();
+      const year = dateObj.getUTCFullYear() + 2;
       dateObj.setUTCFullYear(year);
 
       ck.travel(dateObj);
@@ -309,14 +309,14 @@ lab.experiment('chronokinesis', () => {
 
       lab.test('with milliseconds returns date', (done) => {
         ck.freeze();
-        let fakeDate = new Date(378691200000);
+        const fakeDate = new Date(378691200000);
         expect(fakeDate.getUTCFullYear()).to.equal(1982);
         done();
       });
 
       lab.test('with string returns date', (done) => {
         ck.freeze();
-        let fakeDate = new Date('1982-07-01');
+        const fakeDate = new Date('1982-07-01');
         expect(fakeDate.getUTCFullYear()).to.equal(1982);
         done();
       });
@@ -324,7 +324,7 @@ lab.experiment('chronokinesis', () => {
       lab.test('with year, month, and day returns date', (done) => {
         ck.freeze();
 
-        let fakeDate = new Date(1923, 7, 1);
+        const fakeDate = new Date(1923, 7, 1);
         expect(fakeDate.getFullYear()).to.equal(1923);
         expect(fakeDate.getMonth()).to.equal(7);
         expect(fakeDate.getDate()).to.equal(1);
@@ -335,7 +335,7 @@ lab.experiment('chronokinesis', () => {
       lab.test('with time parts in constructor returns expected time', (done) => {
         ck.freeze();
 
-        let fakeDate = new Date(1923, 7, 1, 10, 40, 59, 2);
+        const fakeDate = new Date(1923, 7, 1, 10, 40, 59, 2);
         expect(fakeDate.getHours()).to.equal(10);
         expect(fakeDate.getMinutes()).to.equal(40);
         expect(fakeDate.getSeconds()).to.equal(59);
@@ -356,7 +356,7 @@ lab.experiment('chronokinesis', () => {
       lab.test('or NaN if invalid date', (done) => {
         ck.freeze();
 
-        let result = Date.parse('13/13/1970');
+        const result = Date.parse('13/13/1970');
 
         expect(isNaN(result)).to.be.true();
         done();
@@ -378,7 +378,7 @@ lab.experiment('chronokinesis', () => {
       lab.test('UTC combined with FakeDate return defined utc date', (done) => {
         ck.freeze();
 
-        let utcDate = new Date(Date.UTC(1982, 0, 1));
+        const utcDate = new Date(Date.UTC(1982, 0, 1));
         expect(utcDate.getUTCFullYear()).to.equal(1982);
         done();
       });
@@ -388,7 +388,7 @@ lab.experiment('chronokinesis', () => {
       lab.test('expected instance functions exists', (done) => {
         ck.freeze();
 
-        let fakeDate = new Date();
+        const fakeDate = new Date();
 
         expect(fakeDate.getDate, 'getDate').to.be.a.function();
         expect(fakeDate.getDay, 'getDay').to.be.a.function();
@@ -481,7 +481,8 @@ lab.experiment('chronokinesis', () => {
         ck.freeze();
 
         let count = 2;
-        let ptr;
+
+        const ptr = setInterval(atInterval, 10);
         function atInterval() {
           if (count === 0) {
             clearInterval(ptr);
@@ -492,8 +493,6 @@ lab.experiment('chronokinesis', () => {
 
           count--;
         }
-
-        ptr = setInterval(atInterval, 10);
       });
     });
   });
@@ -518,21 +517,21 @@ lab.experiment('chronokinesis', () => {
     });
 
     lab.test('travels when used as argument', (done) => {
-      let date = moment().add(7, 'days');
+      const momentDate = moment().add(7, 'days');
 
-      ck.travel(date);
+      ck.travel(momentDate);
 
-      expect((new Date()).getTime()).to.be.about(date.valueOf(), 1000);
+      expect((new Date()).getTime()).to.be.about(momentDate.valueOf(), 1000);
       done();
     });
 
     lab.test('freezes when used as argument', (done) => {
-      let date = moment().subtract(1, 'day');
+      const momentDate = moment().subtract(1, 'day');
 
-      ck.freeze(date);
+      ck.freeze(momentDate);
 
       setTimeout(() => {
-        expect((new Date()).getTime()).to.equal(date.valueOf());
+        expect((new Date()).getTime()).to.equal(momentDate.valueOf());
         done();
       }, 10);
     });
