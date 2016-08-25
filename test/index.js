@@ -2,7 +2,7 @@
 
 const _ = {
   cloneDeep: require('lodash.clonedeep'),
-  assign: require('lodash.assign')
+  assign: Object.assign
 };
 const NativeDate = Date;
 const expect = require('code').expect;

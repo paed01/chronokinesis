@@ -1,6 +1,6 @@
 {
   "name": "chronokinesis",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Module for testing time-dependent code",
   "author": "Pal Edman <pal.edman@outlook.com>",
   "license": "BSD-3-Clause",
@@ -29,11 +29,10 @@
     "hiro"
   ],
   "devDependencies": {
-    "code": "^3.0.0",
-    "coveralls": "^2.11.9",
-    "lab": "^10.7.1",
-    "lodash.assign": "^4.0.9",
-    "lodash.clonedeep": "^4.3.2",
-    "moment": "^2.13.0"
+    "code": "^3.0.2",
+    "coveralls": "^2.11.12",
+    "lab": "^11.0.1",
+    "lodash.clonedeep": "^4.5.0",
+    "moment": "^2.14.1"
   }
 }
