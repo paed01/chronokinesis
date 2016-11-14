@@ -52,11 +52,11 @@ instance.isKeepingTime = function() {
 };
 
 function useFakeDate() {
-  Date = FakeDate;
+  Date = FakeDate; // eslint-disable-line no-global-assign
 }
 
 function useNativeDate() {
-  Date = NativeDate;
+  Date = NativeDate; // eslint-disable-line no-global-assign
 }
 
 function FakeDate() {
