@@ -1,10 +1,11 @@
 {
   "name": "chronokinesis",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Module for testing time-dependent code",
   "author": "Pal Edman <pal.edman@outlook.com>",
   "license": "BSD-3-Clause",
   "main": "index.js",
+  "browser": "dist/chronokinesis.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/paed01/chronokinesis"
@@ -13,10 +14,12 @@
     "node": ">=4"
   },
   "scripts": {
-    "test": "make test-cov-lcov"
+    "test": "make test-cov-lcov",
+    "prepublish": "rollup -c"
   },
   "files": [
     "index.js",
+    "dist/chronokinesis.js",
     "LICENCE",
     "README.md"
   ],
@@ -31,13 +34,19 @@
     "test",
     "freeze",
     "travel",
-    "hiro"
+    "hiro",
+    "fake now"
   ],
   "devDependencies": {
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-es2015-rollup": "^3.0.0",
     "code": "^4.0.0",
     "coveralls": "^2.11.15",
     "lab": "^11.2.1",
     "lodash.clonedeep": "^4.5.0",
-    "moment": "^2.17.1"
+    "moment": "^2.17.1",
+    "rollup": "^0.37.0",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^6.0.0"
   }
 }
