@@ -4,6 +4,22 @@ chronokinesis
 
 Mock time and date for traveling and freezing. Inspired and borrowed from [timekeeper](https://github.com/vesln/timekeeper).
 
+<!-- toc -->
+
+- [Introduction](#introduction)
+- [API Reference](#api-reference)
+  - [`freeze([...args])`](#freezeargs)
+  - [`travel([...args])`](#travelargs)
+  - [`defrost()`](#defrost)
+  - [`reset()`](#reset)
+  - [`isKeepingTime()`](#iskeepingtime)
+- [Distributions](#distributions)
+  - [Browser](#browser)
+  - [Rollup](#rollup)
+- [Acknowledgements](#acknowledgements)
+
+<!-- tocstop -->
+
 # Introduction
 
 Mock `Date` and `Date.now` in order to help you test time-dependent code. Provides `travel` and `freeze` functionality for your Node.js tests.
@@ -37,9 +53,13 @@ setTimeout(() => {
 }, 2000);
 ```
 
-## `#freeze`
+# API Reference
+
+## `freeze([...args])`
 
 Freeze point in time. Calls can be made with the same arguments as the `Date` constructor.
+
+- `...args`: Optional date constructor arguments, if empty stops time at now
 
 ```javascript
 const ck = require('chronokinesis');
@@ -54,9 +74,11 @@ setTimeout(() => {
 }, 2000);
 ```
 
-## `#travel`
+## `travel([...args])`
 
 Time travel to another era. Calls can be made with the same arguments as the `Date` constructor
+
+- `...args`: Optional date constructor arguments, pretty useless if empty but won´t crash
 
 ```javascript
 const ck = require('chronokinesis');
@@ -70,7 +92,7 @@ setTimeout(function() {
 }, 1500);
 ```
 
-When used in combination with [`#freeze`](#freeze) the time is still frozen but at the travelled time.
+When used in combination with [`freeze`](#freeze) the time is still frozen but at the travelled time().
 
 ```javascript
 const ck = require('chronokinesis');
@@ -87,7 +109,7 @@ setTimeout(function() {
 }, 1500);
 ```
 
-## `#defrost`
+## `defrost()`
 
 Defrost a frozen point in time. Used in combination with travelling will start ticking the clock.
 
@@ -110,7 +132,7 @@ setTimeout(() => {
 }, 2000);
 ```
 
-## `#reset`
+## `reset()`
 
 Resets Date to current glory.
 
@@ -126,7 +148,7 @@ ck.reset();
 console.log(new Date())
 ```
 
-### `#isKeepingTime`
+## `isKeepingTime()`
 
 Utility function to see if we still travel or freeze time.
 
@@ -137,6 +159,18 @@ console.log(ck.isKeepingTime() ? 'Is' : 'Not', 'keeping time');
 ck.travel(1893448800000);
 console.log(ck.isKeepingTime() ? 'Is' : 'Not', 'keeping time');
 ```
+
+# Distributions
+
+The module is prepared for browser and [rollup](https://github.com/rollup/rollup).
+
+## Browser
+
+Use `dist/chronokinesis.js`. Sets global property `chronokinesis`.
+
+## Rollup
+
+`jsnext:main: dist/index.js`
 
 # Acknowledgements
 

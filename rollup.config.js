@@ -5,7 +5,6 @@ const babel = require('rollup-plugin-babel');
 
 module.exports = {
   entry: './index.js',
-  format: 'iife',
   moduleName: 'chronokinesis',
   plugins: [
     commonjs({
@@ -16,5 +15,8 @@ module.exports = {
       exclude: 'node_modules/**'
     })
   ],
-  dest: 'dist/chronokinesis.js'
+  targets: [
+    { dest: 'dist/chronokinesis.js', format: 'iife' },
+    { dest: 'dist/index.es.js', format: 'es' }
+  ]
 };
