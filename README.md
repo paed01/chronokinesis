@@ -96,6 +96,8 @@ When used in combination with [`freeze`](#freeze) the time is still frozen but a
 
 ```javascript
 const ck = require('chronokinesis');
+const moment = require('moment');
+
 let date = new Date(2018, 0, 31);
 
 ck.freeze(date);
@@ -170,7 +172,7 @@ Use `dist/chronokinesis.js`. Sets global property `chronokinesis`.
 
 ## Rollup
 
-`jsnext:main: dist/index.js`
+`jsnext:main: dist/index.es.js`
 
 # Acknowledgements
 
