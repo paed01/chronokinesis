@@ -39,12 +39,11 @@ instance.travel = function() {
   return travelToDate;
 };
 
-instance.reset = function(callback) {
+instance.reset = function() {
   useNativeDate();
   freeze = null;
   started = null;
   travel = null;
-  return callback && callback();
 };
 
 instance.isKeepingTime = function() {
