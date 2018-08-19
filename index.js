@@ -1,54 +1,79 @@
 /**
- * Borrowed from Time keeper - EEasy testing of time-dependent code.
+ * Inspired by Time keeper - EEasy testing of time-dependent code.
  *
  * Veselin Todorov <hi@vesln.com>
  * MIT License.
  */
-
 'use strict';
 
 const NativeDate = Date;
-const instance = {};
 
-let freeze = null;
-let travel = null;
+let freezedAt = null;
+let traveledTo = null;
 let started = null;
 
-instance.freeze = function() {
-  useFakeDate();
-  freeze = instantiate(Date, arguments);
-  return freeze;
+function FakeDate(...args) {
+  const length = args.length;
+
+  if (!length && freezedAt) return new NativeDate(freezedAt);
+  if (!length && traveledTo) return new NativeDate(time());
+
+  return instantiate(NativeDate, args);
+}
+
+FakeDate.UTC = NativeDate.UTC;
+FakeDate.parse = NativeDate.parse;
+
+FakeDate.prototype = NativeDate.prototype;
+
+FakeDate.now = function() {
+  if (freezedAt) return freezedAt.getTime();
+  return time();
 };
 
-instance.defrost = function() {
-  freeze = null;
+module.exports = {
+  freeze,
+  defrost,
+  travel,
+  reset,
+  isKeepingTime,
 };
 
-instance.travel = function() {
+function freeze(...args) {
+  useFakeDate();
+  freezedAt = instantiate(Date, args);
+  return freezedAt;
+}
+
+function defrost() {
+  freezedAt = null;
+}
+
+function travel(...args) {
   useFakeDate();
 
-  const travelToDate = instantiate(Date, arguments);
+  const travelToDate = instantiate(Date, args);
 
-  travel = travelToDate.getTime();
+  traveledTo = travelToDate.getTime();
   started = NativeDate.now();
 
-  if (freeze) {
-    freeze = travelToDate;
+  if (freezedAt) {
+    freezedAt = travelToDate;
   }
 
   return travelToDate;
-};
+}
 
-instance.reset = function() {
+function reset() {
   useNativeDate();
-  freeze = null;
+  freezedAt = null;
   started = null;
-  travel = null;
-};
+  traveledTo = null;
+}
 
-instance.isKeepingTime = function() {
+function isKeepingTime() {
   return Date === FakeDate;
-};
+}
 
 function useFakeDate() {
   Date = FakeDate; // eslint-disable-line no-global-assign
@@ -58,34 +83,12 @@ function useNativeDate() {
   Date = NativeDate; // eslint-disable-line no-global-assign
 }
 
-function FakeDate() {
-  const length = arguments.length;
-
-  if (!length && freeze) return new NativeDate(freeze);
-  if (!length && travel) return new NativeDate(time());
-
-  const date = instantiate(NativeDate, arguments);
-
-  return date;
-}
-
 function time() {
-  return travel + (NativeDate.now() - started);
+  return traveledTo + (NativeDate.now() - started);
 }
-
-FakeDate.UTC = NativeDate.UTC;
-FakeDate.parse = NativeDate.parse;
-
-FakeDate.prototype = NativeDate.prototype;
-
-FakeDate.now = function() {
-  if (freeze) return freeze.getTime();
-  return time();
-};
 
 function instantiate(type, args) {
-  const ctorArgs = Array.prototype.slice.call(args);
-  return new (Function.prototype.bind.apply(type, [null].concat(ctorArgs)))();
+  const ctorArgs = args.slice();
+  ctorArgs.unshift(null);
+  return new (Function.prototype.bind.apply(type, ctorArgs))();
 }
-
-module.exports = instance;
