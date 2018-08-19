@@ -1,97 +1,125 @@
-var chronokinesis = (function () {
-'use strict';
+var chronokinesis = (function (exports) {
+  'use strict';
 
-/**
- * Borrowed from Time keeper - EEasy testing of time-dependent code.
- *
- * Veselin Todorov <hi@vesln.com>
- * MIT License.
- */
+  /**
+   * Inspired by Time keeper - EEasy testing of time-dependent code.
+   *
+   * Veselin Todorov <hi@vesln.com>
+   * MIT License.
+   */
 
-var NativeDate = Date;
-var instance = {};
+  var NativeDate = Date;
 
-var freeze = null;
-var travel = null;
-var started = null;
+  var freezedAt = null;
+  var traveledTo = null;
+  var started = null;
 
-instance.freeze = function () {
-  useFakeDate();
-  freeze = instantiate(Date, arguments);
-  return freeze;
-};
+  function FakeDate() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-instance.defrost = function () {
-  freeze = null;
-};
+    var length = args.length;
 
-instance.travel = function () {
-  useFakeDate();
+    if (!length && freezedAt) return new NativeDate(freezedAt);
+    if (!length && traveledTo) return new NativeDate(time());
 
-  var travelToDate = instantiate(Date, arguments);
-
-  travel = travelToDate.getTime();
-  started = NativeDate.now();
-
-  if (freeze) {
-    freeze = travelToDate;
+    return instantiate(NativeDate, args);
   }
 
-  return travelToDate;
-};
+  FakeDate.UTC = NativeDate.UTC;
+  FakeDate.parse = NativeDate.parse;
 
-instance.reset = function (callback) {
-  useNativeDate();
-  freeze = null;
-  started = null;
-  travel = null;
-  return callback && callback();
-};
+  FakeDate.prototype = NativeDate.prototype;
 
-instance.isKeepingTime = function () {
-  return Date === FakeDate;
-};
+  FakeDate.now = function () {
+    if (freezedAt) return freezedAt.getTime();
+    return time();
+  };
 
-function useFakeDate() {
-  Date = FakeDate; // eslint-disable-line no-global-assign
-}
+  var chronokinesis = {
+    freeze: freeze,
+    defrost: defrost,
+    travel: travel,
+    reset: reset,
+    isKeepingTime: isKeepingTime
+  };
 
-function useNativeDate() {
-  Date = NativeDate; // eslint-disable-line no-global-assign
-}
+  function freeze() {
+    useFakeDate();
 
-function FakeDate() {
-  var length = arguments.length;
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
 
-  if (!length && freeze) return new NativeDate(freeze);
-  if (!length && travel) return new NativeDate(time());
+    freezedAt = instantiate(Date, args);
+    return freezedAt;
+  }
 
-  var date = instantiate(NativeDate, arguments);
+  function defrost() {
+    freezedAt = null;
+  }
 
-  return date;
-}
+  function travel() {
+    useFakeDate();
 
-function time() {
-  return travel + (NativeDate.now() - started);
-}
+    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+      args[_key3] = arguments[_key3];
+    }
 
-FakeDate.UTC = NativeDate.UTC;
-FakeDate.parse = NativeDate.parse;
+    var travelToDate = instantiate(Date, args);
 
-FakeDate.prototype = NativeDate.prototype;
+    traveledTo = travelToDate.getTime();
+    started = NativeDate.now();
 
-FakeDate.now = function () {
-  if (freeze) return freeze.getTime();
-  return time();
-};
+    if (freezedAt) {
+      freezedAt = travelToDate;
+    }
 
-function instantiate(type, args) {
-  var ctorArgs = Array.prototype.slice.call(args);
-  return new (Function.prototype.bind.apply(type, [null].concat(ctorArgs)))();
-}
+    return travelToDate;
+  }
 
-var index = instance;
+  function reset() {
+    useNativeDate();
+    freezedAt = null;
+    started = null;
+    traveledTo = null;
+  }
 
-return index;
+  function isKeepingTime() {
+    return Date === FakeDate;
+  }
 
-}());
+  function useFakeDate() {
+    Date = FakeDate; // eslint-disable-line no-global-assign
+  }
+
+  function useNativeDate() {
+    Date = NativeDate; // eslint-disable-line no-global-assign
+  }
+
+  function time() {
+    return traveledTo + (NativeDate.now() - started);
+  }
+
+  function instantiate(type, args) {
+    var ctorArgs = args.slice();
+    ctorArgs.unshift(null);
+    return new (Function.prototype.bind.apply(type, ctorArgs))();
+  }
+  var chronokinesis_1 = chronokinesis.freeze;
+  var chronokinesis_2 = chronokinesis.defrost;
+  var chronokinesis_3 = chronokinesis.travel;
+  var chronokinesis_4 = chronokinesis.reset;
+  var chronokinesis_5 = chronokinesis.isKeepingTime;
+
+  exports.default = chronokinesis;
+  exports.freeze = chronokinesis_1;
+  exports.defrost = chronokinesis_2;
+  exports.travel = chronokinesis_3;
+  exports.reset = chronokinesis_4;
+  exports.isKeepingTime = chronokinesis_5;
+
+  return exports;
+
+}({}));

@@ -1,5 +1,10 @@
 {
-  "parser": "espree",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
+  },
   "env": {
     "node": true,
     "es6": true

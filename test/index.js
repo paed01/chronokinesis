@@ -1,31 +1,34 @@
 'use strict';
 
+const expect = require('code').expect;
+const Lab = require('lab');
+const moment = require('moment');
+
 const _ = {
   cloneDeep: require('lodash.clonedeep'),
   assign: Object.assign
 };
+
 const NativeDate = Date;
-const expect = require('code').expect;
-const Lab = require('lab');
-const lab = exports.lab = Lab.script();
-const moment = require('moment');
+const {afterEach, beforeEach, describe, it} = exports.lab = Lab.script();
 
 const ck = require('..');
 
-lab.experiment('chronokinesis', () => {
-  lab.experiment('#freeze', () => {
-    lab.afterEach(ck.reset);
+describe('chronokinesis', () => {
+  describe('#freeze', () => {
+    afterEach(ck.reset);
 
-    lab.test('stops time', (done) => {
+    it('stops time', () => {
       const now = new Date();
       ck.freeze(now);
-      setTimeout(() => {
+      return postpone(() => {
+
         expect((new Date()).getTime()).to.equal(now.getTime());
-        done();
+
       }, 10);
     });
 
-    lab.test('can be used again', (done) => {
+    it('can be used again', () => {
       const now = new Date();
       ck.freeze(now);
 
@@ -33,117 +36,106 @@ lab.experiment('chronokinesis', () => {
 
       ck.freeze(again);
 
-      setTimeout(() => {
+      return postpone(() => {
         expect((new Date()).getTime()).to.equal(again.getTime());
-        done();
       }, 10);
     });
 
-    lab.test('is not affected when a date is manipulated', (done) => {
+    it('is not affected when a date is manipulated', () => {
       const now = new Date();
       ck.freeze(now);
 
-      setTimeout(() => {
+      return postpone(() => {
         const dateObj = new Date();
         const hour = dateObj.getUTCHours() + 1;
         dateObj.setUTCHours(hour);
 
         expect(dateObj.getUTCHours()).to.equal(hour);
         expect((new Date()).getTime()).to.equal(now.getTime());
-
-        done();
       }, 10);
     });
 
-    lab.test('when used without argument uses now', (done) => {
+    it('when used without argument uses now', () => {
       ck.freeze();
 
       const dateObj = new Date();
 
-      setTimeout(() => {
+      return postpone(() => {
         expect((new Date()).getTime()).to.equal(dateObj.getTime());
-        done();
       }, 10);
     });
 
-    lab.test('Date.now is frozen', (done) => {
+    it('Date.now is frozen', () => {
       const freezed = ck.freeze();
 
-      setTimeout(() => {
+      return postpone(() => {
         expect(Date.now()).to.equal(freezed.getTime());
-        done();
       }, 10);
     });
 
-    lab.test('without arguments while time traveling freezes at traveled point in time', (done) => {
+    it('without arguments while time traveling freezes at traveled point in time', () => {
       const traveledTo = ck.travel(1982, 5, 25, 10, 10, 10, 10);
       const freeze = ck.freeze();
 
-      setTimeout(() => {
+      return postpone(() => {
         expect(freeze.getTime()).to.be.about(traveledTo.getTime(), 1000);
-        done();
       }, 10);
     });
 
-    lab.test('with arguments while time traveling freezes at defined time', (done) => {
+    it('with arguments while time traveling freezes at defined time', () => {
       ck.travel(1982, 5, 25, 10, 10, 10, 10);
       const freeze = ck.freeze(1980, 0, 1);
 
-      setTimeout(() => {
+      return postpone(() => {
         expect(freeze.getTime()).to.be.about(freeze.getTime(), 1000);
-        done();
       }, 10);
     });
 
-    lab.test('with FakeDate', (done) => {
+    it('with FakeDate', () => {
       const traveled = ck.travel(1982, 5, 25, 10, 10, 10, 10);
       const freeze = ck.freeze(new Date());
 
-      setTimeout(() => {
+      return postpone(() => {
         expect(freeze.getTime()).to.be.about(traveled.getTime(), 1000);
-        done();
       }, 10);
     });
   });
 
-  lab.experiment('#defrost', () => {
-    lab.afterEach(ck.reset);
+  describe('#defrost', () => {
+    afterEach(ck.reset);
 
-    lab.test('starts ticking but is still in timekeeping mode', (done) => {
+    it('starts ticking but is still in timekeeping mode', () => {
       const freeze = ck.freeze(1980, 1, 1);
 
       ck.defrost();
 
-      setTimeout(() => {
+      return postpone(() => {
         expect((new Date()).getTime()).to.be.above(freeze.getTime());
         expect(ck.isKeepingTime()).to.be.true();
-        done();
       }, 10);
     });
 
-    lab.test('starts ticking traveled time', (done) => {
+    it('starts ticking traveled time', () => {
       ck.freeze(1982, 5, 25);
       const traveled = ck.travel(1982, 5, 25, 10, 10, 10, 10).getTime();
 
       ck.defrost();
 
-      setTimeout(() => {
+      return postpone(() => {
         expect((new Date()).getTime()).to.be.above(traveled);
         expect((new Date()).getTime()).to.be.about(traveled, 1000);
-        done();
       }, 10);
     });
   });
 
-  lab.experiment('#travel', () => {
+  describe('#travel', () => {
     let now;
-    lab.beforeEach((done) => {
+    beforeEach(() => {
       now = new Date();
-      done();
     });
-    lab.afterEach(ck.reset);
+    afterEach(ck.reset);
 
-    lab.test('travels forwards', (done) => {
+    it('travels forwards', () => {
       const dateObj = new Date();
       const year = dateObj.getUTCFullYear() + 2;
       dateObj.setUTCFullYear(year);
@@ -151,10 +143,9 @@ lab.experiment('chronokinesis', () => {
       ck.travel(dateObj);
 
       expect((new Date()).getUTCFullYear()).to.be.above(now.getUTCFullYear());
-      done();
     });
 
-    lab.test('and backwards', (done) => {
+    it('and backwards', () => {
       const dateObj = new Date();
       const year = dateObj.getUTCFullYear() - 2;
       dateObj.setUTCFullYear(year);
@@ -162,10 +153,9 @@ lab.experiment('chronokinesis', () => {
       ck.travel(dateObj);
 
       expect((new Date()).getUTCFullYear()).to.be.below(now.getUTCFullYear());
-      done();
     });
 
-    lab.test('with arguments', (done) => {
+    it('with arguments', () => {
       const dateObj = new Date();
       const year = dateObj.getUTCFullYear() - 2;
       dateObj.setUTCFullYear(year);
@@ -177,77 +167,68 @@ lab.experiment('chronokinesis', () => {
       ck.travel(1980, 11, 24);
 
       expect((new Date()).getUTCFullYear()).to.be.equal(1980);
-
-      done();
     });
 
-    lab.test('without arguments does just about nothing', (done) => {
+    it('without arguments does just about nothing', () => {
       ck.travel();
 
       expect((new Date()).getUTCFullYear()).to.be.equal(now.getUTCFullYear());
-      done();
     });
 
-    lab.test('Date.now has traveled', (done) => {
+    it('Date.now has traveled', () => {
       const dateObj = new Date();
       const year = dateObj.getUTCFullYear() - 3;
       dateObj.setUTCFullYear(year);
 
       ck.travel(dateObj);
 
-      setTimeout(() => {
+      return postpone(() => {
         expect(Date.now()).to.be.above(dateObj.getTime());
-        done();
       }, 10);
     });
 
-    lab.test('frozen time refreezes time', (done) => {
+    it('frozen time refreezes time', () => {
       ck.freeze(1981, 5, 19);
       const traveledTo = ck.travel(1982, 5, 25, 10, 10, 10, 10);
 
-      setTimeout(() => {
+      return postpone(() => {
         expect((new Date()).getTime()).to.equal(traveledTo.getTime());
-        done();
       }, 10);
     });
 
-    lab.test('with FakeDate', (done) => {
+    it('with FakeDate', () => {
       const freeze = ck.freeze(1980, 0, 1);
       const traveled = ck.travel(new Date());
 
-      setTimeout(() => {
+      return postpone(() => {
         expect(traveled.getTime()).to.equal(freeze.getTime());
-        done();
       }, 10);
     });
 
   });
 
-  lab.experiment('#isKeepingTime', () => {
-    lab.afterEach(ck.reset);
+  describe('#isKeepingTime', () => {
+    afterEach(ck.reset);
 
-    lab.test('returns true when frozen', (done) => {
+    it('returns true when frozen', () => {
       ck.freeze();
       expect(ck.isKeepingTime()).to.be.true();
-      done();
     });
 
-    lab.test('returns true when traveled', (done) => {
+    it('returns true when traveled', () => {
       ck.travel('1972-1-1');
       expect(ck.isKeepingTime()).to.be.true();
-      done();
     });
 
-    lab.test('but false when reset', (done) => {
+    it('but false when reset', () => {
       expect(ck.isKeepingTime()).to.be.false();
-      done();
     });
   });
 
-  lab.experiment('#reset', () => {
-    lab.afterEach(ck.reset);
+  describe('#reset', () => {
+    afterEach(ck.reset);
 
-    lab.test('resets Date to native Date', (done) => {
+    it('resets Date to native Date', () => {
       expect(Date).to.equal(NativeDate);
       ck.freeze();
       expect(Date).to.not.equal(NativeDate);
@@ -260,19 +241,16 @@ lab.experiment('chronokinesis', () => {
       expect(Date.constructor.prototype).to.equal(NativeDate.constructor.prototype);
 
       expect(new Date()).to.be.instanceOf(NativeDate).and.not.a.function();
-
-      done();
     });
 
-    lab.test('after reset in combination with lodash cloneDeep returns native Date', (done) => {
+    it('after reset in combination with lodash cloneDeep returns native Date', () => {
       const content = _.assign(_.cloneDeep({
         d: new Date()
       }));
       expect(content.d).to.not.be.a.function().and.instanceOf(NativeDate);
-      done();
     });
 
-    lab.test('resets frozen time', (done) => {
+    it('resets frozen time', () => {
       const dateObj = new Date();
       const year = dateObj.getUTCFullYear() + 2;
       dateObj.setUTCFullYear(year);
@@ -281,10 +259,9 @@ lab.experiment('chronokinesis', () => {
       ck.reset();
       expect((new Date()).getUTCFullYear()).to.be.below(freeze.getUTCFullYear());
       expect(Date.now()).to.be.below(freeze.getTime());
-      done();
     });
 
-    lab.test('resets traveled time', (done) => {
+    it('resets traveled time', () => {
       const dateObj = new Date();
       const year = dateObj.getUTCFullYear() + 2;
       dateObj.setUTCFullYear(year);
@@ -293,46 +270,40 @@ lab.experiment('chronokinesis', () => {
       ck.reset();
       expect((new Date()).getUTCFullYear()).to.be.below(dateObj.getUTCFullYear());
       expect(Date.now()).to.be.below(dateObj.getTime());
-      done();
     });
   });
 
-  lab.experiment('FakeDate', () => {
-    lab.afterEach(ck.reset);
+  describe('FakeDate', () => {
+    afterEach(ck.reset);
 
-    lab.experiment('#ctor', () => {
-      lab.test('without arguments returns date', (done) => {
+    describe('#ctor', () => {
+      it('without arguments returns date', () => {
         ck.freeze();
         expect(new Date()).to.be.instanceOf(Date);
-        done();
       });
 
-      lab.test('with milliseconds returns date', (done) => {
+      it('with milliseconds returns date', () => {
         ck.freeze();
         const fakeDate = new Date(378691200000);
         expect(fakeDate.getUTCFullYear()).to.equal(1982);
-        done();
       });
 
-      lab.test('with string returns date', (done) => {
+      it('with string returns date', () => {
         ck.freeze();
         const fakeDate = new Date('1982-07-01');
         expect(fakeDate.getUTCFullYear()).to.equal(1982);
-        done();
       });
 
-      lab.test('with year, month, and day returns date', (done) => {
+      it('with year, month, and day returns date', () => {
         ck.freeze();
 
         const fakeDate = new Date(1923, 7, 1);
         expect(fakeDate.getFullYear()).to.equal(1923);
         expect(fakeDate.getMonth()).to.equal(7);
         expect(fakeDate.getDate()).to.equal(1);
-
-        done();
       });
 
-      lab.test('with time parts in constructor returns expected time', (done) => {
+      it('with time parts in constructor returns expected time', () => {
         ck.freeze();
 
         const fakeDate = new Date(1923, 7, 1, 10, 40, 59, 2);
@@ -340,31 +311,26 @@ lab.experiment('chronokinesis', () => {
         expect(fakeDate.getMinutes()).to.equal(40);
         expect(fakeDate.getSeconds()).to.equal(59);
         expect(fakeDate.getMilliseconds()).to.equal(2);
-
-        done();
       });
-
     });
 
-    lab.experiment('parse', () => {
-      lab.test('returns milliseconds', (done) => {
+    describe('parse', () => {
+      it('returns milliseconds', () => {
         ck.freeze();
         expect(Date.parse('1/1/1970')).to.be.a.number();
-        done();
       });
 
-      lab.test('or NaN if invalid date', (done) => {
+      it('or NaN if invalid date', () => {
         ck.freeze();
 
         const result = Date.parse('13/13/1970');
 
         expect(isNaN(result)).to.be.true();
-        done();
       });
     });
 
-    lab.experiment('UTC', () => {
-      lab.test('UTC returns milliseconds', (done) => {
+    describe('UTC', () => {
+      it('UTC returns milliseconds', () => {
         ck.freeze();
         expect(Date.UTC(1923, 7, 1, 10, 40, 59, 1)).to.be.below(0);
         expect(Date.UTC(1923, 7, 1, 10, 40, 59)).to.be.below(0);
@@ -372,20 +338,18 @@ lab.experiment('chronokinesis', () => {
         expect(Date.UTC(1923, 7, 1, 10)).to.be.below(0);
         expect(Date.UTC(1923, 7, 1)).to.be.below(0);
         expect(Date.UTC(1923, 7)).to.be.below(0);
-        done();
       });
 
-      lab.test('UTC combined with FakeDate return defined utc date', (done) => {
+      it('UTC combined with FakeDate return defined utc date', () => {
         ck.freeze();
 
         const utcDate = new Date(Date.UTC(1982, 0, 1));
         expect(utcDate.getUTCFullYear()).to.equal(1982);
-        done();
       });
     });
 
-    lab.experiment('prototype', () => {
-      lab.test('expected instance functions exists', (done) => {
+    describe('prototype', () => {
+      it('expected instance functions exists', () => {
         ck.freeze();
 
         const fakeDate = new Date();
@@ -436,104 +400,112 @@ lab.experiment('chronokinesis', () => {
         expect(fakeDate.toTimeString, 'toTimeString').to.be.a.function();
         expect(fakeDate.toUTCString, 'toUTCString').to.be.a.function();
         expect(fakeDate.valueOf, 'valueOf').to.be.a.function();
-
-        done();
       });
     });
   });
 
-  lab.experiment('Other time dependant functionality', () => {
+  describe('Other time dependant functionality', () => {
     let isReset = false;
-    lab.beforeEach((done) => {
+    beforeEach(() => {
       isReset = false;
-      done();
     });
 
-    lab.afterEach((done) => {
-      ck.reset(() => {
-        isReset = true;
-        done();
-      });
+    afterEach(() => {
+      ck.reset();
+      isReset = true;
     });
 
-    lab.experiment('setTimeout', () => {
-      lab.test('has expected behavior', (done) => {
+    describe('setTimeout', () => {
+      it('has expected behavior', () => {
         ck.freeze();
-        setTimeout(() => {
-          expect(isReset).to.be.false();
-          done();
-        }, 10);
-      });
-    });
 
-    lab.experiment('setImmediate', () => {
-      lab.test('has expected behavior', (done) => {
-        ck.freeze();
-        setImmediate(() => {
-          expect(isReset).to.be.false();
-          done();
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            expect(isReset).to.be.false();
+            resolve();
+          }, 10);
         });
       });
     });
 
-    lab.experiment('setInterval', () => {
-      lab.test('has expected behavior', (done) => {
+    describe('setImmediate', () => {
+      it('has expected behavior', () => {
+        ck.freeze();
+
+        return new Promise((resolve) => {
+          setImmediate(() => {
+            expect(isReset).to.be.false();
+            resolve();
+          });
+        });
+      });
+    });
+
+    describe('setInterval', () => {
+      it('has expected behavior', () => {
         ck.freeze();
 
         let count = 2;
 
-        const ptr = setInterval(atInterval, 10);
-        function atInterval() {
-          if (count === 0) {
-            clearInterval(ptr);
-            done();
+        return new Promise((resolve) => {
+
+          const ptr = setInterval(atInterval, 10);
+          function atInterval() {
+            if (count === 0) {
+              clearInterval(ptr);
+              resolve();
+            }
+
+            expect(isReset).to.be.false();
+
+            count--;
           }
-
-          expect(isReset).to.be.false();
-
-          count--;
-        }
+        });
       });
     });
   });
 
-  lab.experiment('moment', () => {
-    lab.afterEach(ck.reset);
+  describe('moment', () => {
+    afterEach(ck.reset);
 
-    lab.test('frozen format has expected behavior', (done) => {
+    it('frozen format has expected behavior', () => {
       ck.freeze(1980, 0, 1);
-      setTimeout(() => {
+      return postpone(() => {
         expect(moment().format('YYYY-MM-DD')).to.equal('1980-01-01');
-        done();
       }, 10);
     });
 
-    lab.test('traveled format has expected behavior', (done) => {
+    it('traveled format has expected behavior', () => {
       ck.travel(1981, 0, 1);
-      setTimeout(() => {
+      return postpone(() => {
         expect(moment().format('YYYY-MM-DD')).to.equal('1981-01-01');
-        done();
       }, 10);
     });
 
-    lab.test('travels when used as argument', (done) => {
+    it('travels when used as argument', () => {
       const momentDate = moment().add(7, 'days');
 
       ck.travel(momentDate);
 
       expect((new Date()).getTime()).to.be.about(momentDate.valueOf(), 1000);
-      done();
     });
 
-    lab.test('freezes when used as argument', (done) => {
+    it('freezes when used as argument', () => {
       const momentDate = moment().subtract(1, 'day');
 
       ck.freeze(momentDate);
 
-      setTimeout(() => {
+      return postpone(() => {
         expect((new Date()).getTime()).to.equal(momentDate.valueOf());
-        done();
       }, 10);
     });
   });
 });
+
+function postpone(fn, ms, ...args) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(fn(...args));
+    }, ms);
+  });
+}
