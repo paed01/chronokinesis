@@ -6,27 +6,23 @@
  */
 
 var NativeDate = Date;
-
 var freezedAt = null;
 var traveledTo = null;
 var started = null;
 
 function FakeDate() {
-  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
 
   var length = args.length;
-
   if (!length && freezedAt) return new NativeDate(freezedAt);
   if (!length && traveledTo) return new NativeDate(time());
-
   return instantiate(NativeDate, args);
 }
 
 FakeDate.UTC = NativeDate.UTC;
 FakeDate.parse = NativeDate.parse;
-
 FakeDate.prototype = NativeDate.prototype;
 
 FakeDate.now = function () {
@@ -45,7 +41,7 @@ var chronokinesis = {
 function freeze() {
   useFakeDate();
 
-  for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+  for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
     args[_key2] = arguments[_key2];
   }
 
@@ -60,12 +56,11 @@ function defrost() {
 function travel() {
   useFakeDate();
 
-  for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+  for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
     args[_key3] = arguments[_key3];
   }
 
   var travelToDate = instantiate(Date, args);
-
   traveledTo = travelToDate.getTime();
   started = NativeDate.now();
 
