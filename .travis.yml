@@ -1,9 +1,9 @@
 language: node_js
 node_js:
-- '8'
-- '9'
 - '10'
-- '11'
-sudo: false
+- '12'
+- '14'
+- '15'
+script: npm run test:lcov
 after_success:
 - cat coverage.lcov | ./node_modules/.bin/coveralls --verbose

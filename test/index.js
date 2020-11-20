@@ -1,8 +1,8 @@
 'use strict';
 
-const expect = require('code').expect;
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const moment = require('moment');
+const {expect} = require('@hapi/code');
 
 const _ = {
   cloneDeep: require('lodash.clonedeep'),

@@ -106,4 +106,4 @@ var chronokinesis_4 = chronokinesis.reset;
 var chronokinesis_5 = chronokinesis.isKeepingTime;
 
 export default chronokinesis;
-export { chronokinesis_1 as freeze, chronokinesis_2 as defrost, chronokinesis_3 as travel, chronokinesis_4 as reset, chronokinesis_5 as isKeepingTime };
+export { chronokinesis_2 as defrost, chronokinesis_1 as freeze, chronokinesis_5 as isKeepingTime, chronokinesis_4 as reset, chronokinesis_3 as travel };

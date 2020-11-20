@@ -109,11 +109,13 @@ var chronokinesis = (function (exports) {
   var chronokinesis_5 = chronokinesis.isKeepingTime;
 
   exports.default = chronokinesis;
-  exports.freeze = chronokinesis_1;
   exports.defrost = chronokinesis_2;
-  exports.travel = chronokinesis_3;
-  exports.reset = chronokinesis_4;
+  exports.freeze = chronokinesis_1;
   exports.isKeepingTime = chronokinesis_5;
+  exports.reset = chronokinesis_4;
+  exports.travel = chronokinesis_3;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
 
   return exports;
 

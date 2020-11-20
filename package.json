@@ -1,6 +1,6 @@
 {
   "name": "chronokinesis",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Module for testing time-dependent code",
   "author": {
     "name": "Pål Edman",
@@ -15,11 +15,12 @@
     "url": "git://github.com/paed01/chronokinesis"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "scripts": {
     "toc": "node generate-api-toc.js",
-    "test": "make test-cov-lcov",
+    "test": "lab -vcL",
+    "test:lcov": "npm t -- -r lcov -o coverage.lcov",
     "prepare": "npm run toc && rollup -c"
   },
   "files": [
@@ -44,16 +45,17 @@
     "fake now"
   ],
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.2.3",
-    "code": "^5.2.4",
-    "coveralls": "^3.0.2",
-    "lab": "^18.0.1",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@hapi/code": "^8.0.2",
+    "@hapi/lab": "^24.1.0",
+    "coveralls": "^3.1.0",
+    "eslint": "^7.13.0",
     "lodash.clonedeep": "^4.5.0",
     "markdown-toc": "^1.2.0",
-    "moment": "^2.23.0",
-    "rollup": "^1.1.0",
-    "rollup-plugin-babel": "^4.3.1",
-    "rollup-plugin-commonjs": "^9.2.0"
+    "moment": "^2.29.1",
+    "rollup": "^2.33.3",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-commonjs": "^10.1.0"
   }
 }
