@@ -37,6 +37,7 @@ module.exports = {
   travel,
   reset,
   isKeepingTime,
+  timezone,
 };
 
 function freeze(...args) {
@@ -75,6 +76,46 @@ function isKeepingTime() {
   return Date === FakeDate;
 }
 
+function timezone(timeZone) {
+  const formatter = Intl.DateTimeFormat('UTC', {
+    timeZone: timeZone,
+    timeStyle: 'full',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false,
+  });
+
+  return {
+    timeZone,
+    defrost,
+    reset,
+    isKeepingTime,
+    getUTCOffset: getUTCOffset.bind(this, formatter),
+    freeze: freezeInTimezone,
+    travel: travelInTimezone,
+  };
+
+  function freezeInTimezone(...args) {
+    if (isKeepingTime() && !args.length) return freeze();
+
+    const realDate = instantiate(NativeDate, args);
+    const offset = getUTCOffset(formatter, realDate);
+    return freeze(new NativeDate(realDate.getTime() + offset));
+  }
+
+  function travelInTimezone(...args) {
+    if (isKeepingTime() && !args.length) return travel();
+
+    const realDate = instantiate(NativeDate, args);
+    const offset = getUTCOffset(formatter, realDate);
+    return travel(new NativeDate(realDate.getTime() + offset));
+  }
+}
+
 function useFakeDate() {
   Date = FakeDate; // eslint-disable-line no-global-assign
 }
@@ -91,4 +132,12 @@ function instantiate(type, args) {
   const ctorArgs = args.slice();
   ctorArgs.unshift(null);
   return new (Function.prototype.bind.apply(type, ctorArgs))();
+}
+
+function getUTCOffset(formatter, dt) {
+  if (!dt) dt = new Date();
+  const dtSeconds = new NativeDate(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes(), dt.getSeconds());
+  const tzDate = new NativeDate(formatter.format(dtSeconds));
+  const tzUTC = NativeDate.UTC(tzDate.getFullYear(), tzDate.getMonth(), tzDate.getDate(), tzDate.getHours(), tzDate.getMinutes(), tzDate.getSeconds());
+  return tzUTC - dtSeconds;
 }

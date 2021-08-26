@@ -38,7 +38,8 @@ var chronokinesis = (function (exports) {
     defrost: defrost,
     travel: travel,
     reset: reset,
-    isKeepingTime: isKeepingTime
+    isKeepingTime: isKeepingTime,
+    timezone: timezone
   };
 
   function freeze() {
@@ -85,6 +86,51 @@ var chronokinesis = (function (exports) {
     return Date === FakeDate;
   }
 
+  function timezone(timeZone) {
+    var formatter = Intl.DateTimeFormat('UTC', {
+      timeZone: timeZone,
+      timeStyle: 'full',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: false
+    });
+    return {
+      timeZone: timeZone,
+      defrost: defrost,
+      reset: reset,
+      isKeepingTime: isKeepingTime,
+      getUTCOffset: getUTCOffset.bind(this, formatter),
+      freeze: freezeInTimezone,
+      travel: travelInTimezone
+    };
+
+    function freezeInTimezone() {
+      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+      }
+
+      if (isKeepingTime() && !args.length) return freeze();
+      var realDate = instantiate(NativeDate, args);
+      var offset = getUTCOffset(formatter, realDate);
+      return freeze(new NativeDate(realDate.getTime() + offset));
+    }
+
+    function travelInTimezone() {
+      for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+      }
+
+      if (isKeepingTime() && !args.length) return travel();
+      var realDate = instantiate(NativeDate, args);
+      var offset = getUTCOffset(formatter, realDate);
+      return travel(new NativeDate(realDate.getTime() + offset));
+    }
+  }
+
   function useFakeDate() {
     Date = FakeDate; // eslint-disable-line no-global-assign
   }
@@ -102,17 +148,27 @@ var chronokinesis = (function (exports) {
     ctorArgs.unshift(null);
     return new (Function.prototype.bind.apply(type, ctorArgs))();
   }
+
+  function getUTCOffset(formatter, dt) {
+    if (!dt) dt = new Date();
+    var dtSeconds = new NativeDate(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes(), dt.getSeconds());
+    var tzDate = new NativeDate(formatter.format(dtSeconds));
+    var tzUTC = NativeDate.UTC(tzDate.getFullYear(), tzDate.getMonth(), tzDate.getDate(), tzDate.getHours(), tzDate.getMinutes(), tzDate.getSeconds());
+    return tzUTC - dtSeconds;
+  }
   var chronokinesis_1 = chronokinesis.freeze;
   var chronokinesis_2 = chronokinesis.defrost;
   var chronokinesis_3 = chronokinesis.travel;
   var chronokinesis_4 = chronokinesis.reset;
   var chronokinesis_5 = chronokinesis.isKeepingTime;
+  var chronokinesis_6 = chronokinesis.timezone;
 
-  exports.default = chronokinesis;
+  exports['default'] = chronokinesis;
   exports.defrost = chronokinesis_2;
   exports.freeze = chronokinesis_1;
   exports.isKeepingTime = chronokinesis_5;
   exports.reset = chronokinesis_4;
+  exports.timezone = chronokinesis_6;
   exports.travel = chronokinesis_3;
 
   Object.defineProperty(exports, '__esModule', { value: true });

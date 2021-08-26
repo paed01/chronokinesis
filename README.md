@@ -13,6 +13,12 @@ Mock time and date for traveling and freezing. Inspired and borrowed from [timek
   - [`defrost()`](#defrost)
   - [`reset()`](#reset)
   - [`isKeepingTime()`](#iskeepingtime)
+  - [`timezone(timeZone)`](#timezonetimezone)
+    - [timezone `freeze([...args])`](#timezone-freezeargs)
+    - [timezone `travel([...args])`](#timezone-travelargs)
+    - [timezone `reset()`](#timezone-reset)
+    - [timezone `defrost()`](#timezone-defrost)
+    - [timezone `getUTCOffset([date])`](#timezone-getutcoffsetdate)
 - [Distributions](#distributions)
   - [Browser](#browser)
   - [Rollup](#rollup)
@@ -22,7 +28,7 @@ Mock time and date for traveling and freezing. Inspired and borrowed from [timek
 
 # Introduction
 
-Mock `Date` and `Date.now` in order to help you test time-dependent code. Provides `travel` and `freeze` functionality for your Node.js tests.
+Mock `Date` and `Date.now` in order to help you test time-dependent code. Provides `travel`, `freeze`, and timezone functionality for your Node.js tests.
 
 ```javascript
 const ck = require('chronokinesis');
@@ -161,6 +167,38 @@ console.log(ck.isKeepingTime() ? 'Is' : 'Not', 'keeping time');
 ck.travel(1893448800000);
 console.log(ck.isKeepingTime() ? 'Is' : 'Not', 'keeping time');
 ```
+
+## `timezone(timeZone)`
+
+Freeze and travel in different time zones.
+
+```javascript
+const ck = require('chronokinesis');
+
+const tz = ck.timezone('Asia/Shanghai');
+
+tz.freeze();
+```
+
+### timezone `freeze([...args])`
+
+Freeze at the specific timezone.
+
+### timezone `travel([...args])`
+
+Start traveling in the specific timezone.
+
+### timezone `reset()`
+
+Same as [#reset](#reset)
+
+### timezone `defrost()`
+
+Same as [#defrost](#defrost)
+
+### timezone `getUTCOffset([date])`
+
+Returns offset from UTC in milliseconds
 
 # Distributions
 

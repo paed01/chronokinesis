@@ -1,6 +1,6 @@
 {
   "name": "chronokinesis",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Module for testing time-dependent code",
   "author": {
     "name": "Pål Edman",
@@ -20,6 +20,7 @@
   "scripts": {
     "toc": "node generate-api-toc.js",
     "test": "lab -vcL",
+    "posttest": "npm run prepare",
     "test:lcov": "npm t -- -r lcov -o coverage.lcov",
     "prepare": "npm run toc && rollup -c"
   },
@@ -36,6 +37,7 @@
   "keywords": [
     "date",
     "time",
+    "timezone",
     "fake",
     "mock",
     "test",
@@ -54,7 +56,7 @@
     "lodash.clonedeep": "^4.5.0",
     "markdown-toc": "^1.2.0",
     "moment": "^2.29.1",
-    "rollup": "^2.33.3",
+    "rollup": "^2.56.3",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.1.0"
   }
