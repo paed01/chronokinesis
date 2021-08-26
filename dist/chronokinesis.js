@@ -1,13 +1,86 @@
 var chronokinesis = (function (exports) {
   'use strict';
 
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
+  function _createForOfIteratorHelper(o, allowArrayLike) {
+    var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
+
+    if (!it) {
+      if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+        if (it) o = it;
+        var i = 0;
+
+        var F = function () {};
+
+        return {
+          s: F,
+          n: function () {
+            if (i >= o.length) return {
+              done: true
+            };
+            return {
+              done: false,
+              value: o[i++]
+            };
+          },
+          e: function (e) {
+            throw e;
+          },
+          f: F
+        };
+      }
+
+      throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+
+    var normalCompletion = true,
+        didErr = false,
+        err;
+    return {
+      s: function () {
+        it = it.call(o);
+      },
+      n: function () {
+        var step = it.next();
+        normalCompletion = step.done;
+        return step;
+      },
+      e: function (e) {
+        didErr = true;
+        err = e;
+      },
+      f: function () {
+        try {
+          if (!normalCompletion && it.return != null) it.return();
+        } finally {
+          if (didErr) throw err;
+        }
+      }
+    };
+  }
+
   /**
    * Inspired by Time keeper - EEasy testing of time-dependent code.
    *
    * Veselin Todorov <hi@vesln.com>
    * MIT License.
    */
-
   var NativeDate = Date;
   var freezedAt = null;
   var traveledTo = null;
@@ -89,7 +162,6 @@ var chronokinesis = (function (exports) {
   function timezone(timeZone) {
     var formatter = Intl.DateTimeFormat('UTC', {
       timeZone: timeZone,
-      timeStyle: 'full',
       year: 'numeric',
       month: 'numeric',
       day: 'numeric',
@@ -152,9 +224,55 @@ var chronokinesis = (function (exports) {
   function getUTCOffset(formatter, dt) {
     if (!dt) dt = new Date();
     var dtSeconds = new NativeDate(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes(), dt.getSeconds());
-    var tzDate = new NativeDate(formatter.format(dtSeconds));
-    var tzUTC = NativeDate.UTC(tzDate.getFullYear(), tzDate.getMonth(), tzDate.getDate(), tzDate.getHours(), tzDate.getMinutes(), tzDate.getSeconds());
-    return tzUTC - dtSeconds;
+    var tzDate = new NativeDate(toUTC(formatter, dtSeconds));
+    return tzDate.getTime() - dtSeconds.getTime();
+  }
+
+  function toUTC(formatter, dt) {
+    var year, month, day, hour, minute, second;
+
+    var _iterator = _createForOfIteratorHelper(formatter.formatToParts(dt)),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var _step$value = _step.value,
+            type = _step$value.type,
+            value = _step$value.value;
+
+        switch (type) {
+          case 'year':
+            year = parseInt(value);
+            break;
+
+          case 'month':
+            month = parseInt(value) - 1;
+            break;
+
+          case 'day':
+            day = parseInt(value);
+            break;
+
+          case 'hour':
+            hour = parseInt(value) % 24;
+            break;
+
+          case 'minute':
+            minute = parseInt(value);
+            break;
+
+          case 'second':
+            second = parseInt(value);
+            break;
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    return NativeDate.UTC(year, month, day, hour, minute, second);
   }
   var chronokinesis_1 = chronokinesis.freeze;
   var chronokinesis_2 = chronokinesis.defrost;

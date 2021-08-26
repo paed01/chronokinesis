@@ -23,7 +23,7 @@ describe('chronokinesis', () => {
     });
 
     it('throws if timezone is unresolved', () => {
-      expect(() => ck.timezone('Moon/Crater')).to.throw(RangeError, 'Unsupported time zone specified Moon/Crater');
+      expect(() => ck.timezone('Moon/Crater')).to.throw(RangeError, /Moon\/Crater/i);
     });
   });
 
@@ -73,13 +73,13 @@ describe('chronokinesis', () => {
 
       const tz = ck.timezone('UTC');
       tz.freeze(now);
-      expect(diffHrs(now, new Date())).to.equal(0);
+      expect(diffHrs(now, new Date()), 'now').to.equal(0);
 
       tz.freeze(dt);
-      expect(diffHrs(dt, new Date())).to.equal(0);
+      expect(diffHrs(dt, new Date()), 'March').to.equal(0);
 
       tz.freeze(dsdt);
-      expect(diffHrs(dsdt, new Date())).to.equal(0);
+      expect(diffHrs(dsdt, new Date()), 'August').to.equal(0);
     });
 
     it('returns date adjusted for Shanghai', () => {
@@ -183,13 +183,13 @@ describe('chronokinesis', () => {
 
       const tz = ck.timezone('UTC');
       tz.travel(now);
-      expect(diffHrs(now, new Date())).to.equal(0);
+      expect(diffHrs(now, new Date()), 'now').to.equal(0);
 
       tz.travel(dt);
-      expect(diffHrs(dt, new Date())).to.equal(0);
+      expect(diffHrs(dt, new Date()), 'March').to.equal(0);
 
       tz.travel(dsdt);
-      expect(diffHrs(dsdt, new Date())).to.equal(0);
+      expect(diffHrs(dsdt, new Date()), 'August').to.equal(0);
     });
 
     it('returns date adjusted for Shanghai', () => {

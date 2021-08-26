@@ -79,7 +79,6 @@ function isKeepingTime() {
 function timezone(timeZone) {
   const formatter = Intl.DateTimeFormat('UTC', {
     timeZone: timeZone,
-    timeStyle: 'full',
     year: 'numeric',
     month: 'numeric',
     day: 'numeric',
@@ -104,6 +103,7 @@ function timezone(timeZone) {
 
     const realDate = instantiate(NativeDate, args);
     const offset = getUTCOffset(formatter, realDate);
+
     return freeze(new NativeDate(realDate.getTime() + offset));
   }
 
@@ -136,8 +136,37 @@ function instantiate(type, args) {
 
 function getUTCOffset(formatter, dt) {
   if (!dt) dt = new Date();
+
   const dtSeconds = new NativeDate(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes(), dt.getSeconds());
-  const tzDate = new NativeDate(formatter.format(dtSeconds));
-  const tzUTC = NativeDate.UTC(tzDate.getFullYear(), tzDate.getMonth(), tzDate.getDate(), tzDate.getHours(), tzDate.getMinutes(), tzDate.getSeconds());
-  return tzUTC - dtSeconds;
+  const tzDate = new NativeDate(toUTC(formatter, dtSeconds));
+
+  return tzDate.getTime() - dtSeconds.getTime();
+}
+
+function toUTC(formatter, dt) {
+  let year, month, day, hour, minute, second;
+  for (const {type, value} of formatter.formatToParts(dt)) {
+    switch (type) {
+      case 'year':
+        year = parseInt(value);
+        break;
+      case 'month':
+        month = parseInt(value) - 1;
+        break;
+      case 'day':
+        day = parseInt(value);
+        break;
+      case 'hour':
+        hour = parseInt(value) % 24;
+        break;
+      case 'minute':
+        minute = parseInt(value);
+        break;
+      case 'second':
+        second = parseInt(value);
+        break;
+    }
+  }
+
+  return NativeDate.UTC(year, month, day, hour, minute, second);
 }
