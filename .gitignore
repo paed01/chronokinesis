@@ -9,3 +9,4 @@ temp/
 coverage*
 tmp/
 package-lock.json
+Dockerfile

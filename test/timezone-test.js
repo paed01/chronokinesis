@@ -282,7 +282,6 @@ describe('chronokinesis', () => {
       const dsdt = new Date(dt + 2 * 3600000);
 
       expect(ck.timezone('Europe/Stockholm').getUTCOffset(new Date(dt)), 'daylight saving').to.equal(2 * 3600000);
-      expect(ck.timezone('Europe/Stockholm').getUTCOffset(new Date(dt + 3600000)), 'daylight saving').to.equal(2 * 3600000);
       expect(ck.timezone('Europe/Stockholm').getUTCOffset(dsdt), 'outside daylight saving').to.equal(3600000);
     });
   });
