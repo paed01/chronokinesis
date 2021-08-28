@@ -11,6 +11,7 @@ const NativeDate = Date;
 let freezedAt = null;
 let traveledTo = null;
 let started = null;
+let iana = null;
 
 function FakeDate(...args) {
   const length = args.length;
@@ -70,6 +71,7 @@ function reset() {
   freezedAt = null;
   started = null;
   traveledTo = null;
+  iana = null;
 }
 
 function isKeepingTime() {
@@ -77,8 +79,7 @@ function isKeepingTime() {
 }
 
 function timezone(timeZone) {
-  const formatter = Intl.DateTimeFormat('UTC', {
-    timeZone: timeZone,
+  const options = {
     year: 'numeric',
     month: 'numeric',
     day: 'numeric',
@@ -86,6 +87,12 @@ function timezone(timeZone) {
     minute: 'numeric',
     second: 'numeric',
     hour12: false,
+  };
+
+  const current = Intl.DateTimeFormat('UTC', options);
+  const formatter = Intl.DateTimeFormat('UTC', {
+    timeZone: timeZone,
+    ...options,
   });
 
   return {
@@ -93,26 +100,29 @@ function timezone(timeZone) {
     defrost,
     reset,
     isKeepingTime,
-    getUTCOffset: getUTCOffset.bind(this, formatter),
     freeze: freezeInTimezone,
     travel: travelInTimezone,
   };
 
   function freezeInTimezone(...args) {
-    if (isKeepingTime() && !args.length) return freeze();
-
-    const realDate = instantiate(NativeDate, args);
-    const offset = getUTCOffset(formatter, realDate);
-
-    return freeze(new NativeDate(realDate.getTime() + offset));
+    if (!args.length && iana === timeZone) return freeze();
+    iana = timeZone;
+    return freeze(getTime(...args));
   }
 
   function travelInTimezone(...args) {
-    if (isKeepingTime() && !args.length) return travel();
+    if (!args.length && iana === timeZone) return travel();
+    iana = timeZone;
+    return travel(getTime(...args));
+  }
 
-    const realDate = instantiate(NativeDate, args);
-    const offset = getUTCOffset(formatter, realDate);
-    return travel(new NativeDate(realDate.getTime() + offset));
+  function getTime(...args) {
+    const realDate = instantiate(Date, args);
+    const tz = new NativeDate(toUTC(formatter, realDate));
+    if (!args.length) return tz.getTime();
+
+    const currentTz = new NativeDate(toUTC(current, realDate));
+    return realDate.getTime() + currentTz.getTime() - tz.getTime();
   }
 }
 
@@ -132,15 +142,6 @@ function instantiate(type, args) {
   const ctorArgs = args.slice();
   ctorArgs.unshift(null);
   return new (Function.prototype.bind.apply(type, ctorArgs))();
-}
-
-function getUTCOffset(formatter, dt) {
-  if (!dt) dt = new Date();
-
-  const dtSeconds = new NativeDate(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes(), dt.getSeconds());
-  const tzDate = new NativeDate(toUTC(formatter, dtSeconds));
-
-  return tzDate.getTime() - dtSeconds.getTime();
 }
 
 function toUTC(formatter, dt) {

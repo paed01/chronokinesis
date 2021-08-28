@@ -1,6 +1,59 @@
 var chronokinesis = (function (exports) {
   'use strict';
 
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+
+      if (enumerableOnly) {
+        symbols = symbols.filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        });
+      }
+
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys(Object(source), true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(Object(source)).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
+  }
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
   function _unsupportedIterableToArray(o, minLen) {
     if (!o) return;
     if (typeof o === "string") return _arrayLikeToArray(o, minLen);
@@ -85,6 +138,7 @@ var chronokinesis = (function (exports) {
   var freezedAt = null;
   var traveledTo = null;
   var started = null;
+  var iana = null;
 
   function FakeDate() {
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -153,6 +207,7 @@ var chronokinesis = (function (exports) {
     freezedAt = null;
     started = null;
     traveledTo = null;
+    iana = null;
   }
 
   function isKeepingTime() {
@@ -160,8 +215,7 @@ var chronokinesis = (function (exports) {
   }
 
   function timezone(timeZone) {
-    var formatter = Intl.DateTimeFormat('UTC', {
-      timeZone: timeZone,
+    var options = {
       year: 'numeric',
       month: 'numeric',
       day: 'numeric',
@@ -169,37 +223,42 @@ var chronokinesis = (function (exports) {
       minute: 'numeric',
       second: 'numeric',
       hour12: false
-    });
+    };
+    var current = Intl.DateTimeFormat('UTC', options);
+    var formatter = Intl.DateTimeFormat('UTC', _objectSpread2({
+      timeZone: timeZone
+    }, options));
     return {
       timeZone: timeZone,
       defrost: defrost,
       reset: reset,
       isKeepingTime: isKeepingTime,
-      getUTCOffset: getUTCOffset.bind(this, formatter),
       freeze: freezeInTimezone,
       travel: travelInTimezone
     };
 
     function freezeInTimezone() {
+      if (!arguments.length && iana === timeZone) return freeze();
+      iana = timeZone;
+      return freeze(getTime.apply(void 0, arguments));
+    }
+
+    function travelInTimezone() {
+      if (!arguments.length && iana === timeZone) return travel();
+      iana = timeZone;
+      return travel(getTime.apply(void 0, arguments));
+    }
+
+    function getTime() {
       for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
         args[_key4] = arguments[_key4];
       }
 
-      if (isKeepingTime() && !args.length) return freeze();
-      var realDate = instantiate(NativeDate, args);
-      var offset = getUTCOffset(formatter, realDate);
-      return freeze(new NativeDate(realDate.getTime() + offset));
-    }
-
-    function travelInTimezone() {
-      for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-        args[_key5] = arguments[_key5];
-      }
-
-      if (isKeepingTime() && !args.length) return travel();
-      var realDate = instantiate(NativeDate, args);
-      var offset = getUTCOffset(formatter, realDate);
-      return travel(new NativeDate(realDate.getTime() + offset));
+      var realDate = instantiate(Date, args);
+      var tz = new NativeDate(toUTC(formatter, realDate));
+      if (!args.length) return tz.getTime();
+      var currentTz = new NativeDate(toUTC(current, realDate));
+      return realDate.getTime() + currentTz.getTime() - tz.getTime();
     }
   }
 
@@ -219,13 +278,6 @@ var chronokinesis = (function (exports) {
     var ctorArgs = args.slice();
     ctorArgs.unshift(null);
     return new (Function.prototype.bind.apply(type, ctorArgs))();
-  }
-
-  function getUTCOffset(formatter, dt) {
-    if (!dt) dt = new Date();
-    var dtSeconds = new NativeDate(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes(), dt.getSeconds());
-    var tzDate = new NativeDate(toUTC(formatter, dtSeconds));
-    return tzDate.getTime() - dtSeconds.getTime();
   }
 
   function toUTC(formatter, dt) {

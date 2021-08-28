@@ -18,7 +18,6 @@ describe('chronokinesis', () => {
       expect(cktz.freeze).to.be.function();
       expect(cktz.travel).to.be.function();
       expect(cktz.isKeepingTime).to.be.function();
-      expect(cktz.getUTCOffset).to.be.function();
       expect(cktz.timezone).to.be.undefined();
     });
 
@@ -30,92 +29,109 @@ describe('chronokinesis', () => {
   describe('#freeze in timezone', () => {
     beforeEach(ck.reset);
 
-    it('returns date in adjusted for timezone in timezone with daylight saving', () => {
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
-      const dsdt = Date.UTC(2021, 7, 20, 0, 2, 0, 123);
-
-      const tzSweden = ck.timezone('Europe/Stockholm');
-
-      tzSweden.freeze(dt);
-      expect(diffHrs(dt, new Date())).to.equal(1);
-
-      tzSweden.freeze(dsdt);
-      expect(diffHrs(dsdt, new Date())).to.equal(2);
+    it('with arguments freezes at specified time in timezone', () => {
+      const utc = Date.UTC(2021, 7, 26, 15, 0);
 
       const tzFinland = ck.timezone('Europe/Helsinki');
-      tzFinland.freeze(dt);
-      expect(diffHrs(dt, new Date())).to.equal(2);
+      tzFinland.freeze(2021, 7, 26, 18, 0);
+      expect(diffHrs(utc, new Date())).to.equal(0);
 
-      tzFinland.freeze(dsdt);
-      expect(diffHrs(dsdt, new Date())).to.equal(3);
+      const tzSweden = ck.timezone('Europe/Stockholm');
+      tzSweden.freeze(2021, 7, 26, 17, 0);
+      expect(diffHrs(utc, new Date())).to.equal(0);
+
+      const tzLA = ck.timezone('America/Los_Angeles');
+      tzLA.freeze(2021, 7, 26, 8, 0);
+      expect(diffHrs(utc, new Date())).to.equal(0);
+
+      const tzShanghai = ck.timezone('Asia/Shanghai');
+      tzShanghai.freeze(2021, 7, 26, 23, 0);
+      expect(diffHrs(utc, new Date())).to.equal(0);
     });
 
-    it('returns date adjusted for Los Angeles', () => {
-      const now = Date.now();
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
-      const dsdt = Date.UTC(2021, 7, 20, 0, 2, 0, 123);
+    it('without arguments freezes moves now to timezone', () => {
+      const utc = Date.now();
 
-      const tz = ck.timezone('America/Los_Angeles');
-      tz.freeze(now);
-      expect(diffHrs(now, new Date())).to.equal(-7);
+      const tzFinland = ck.timezone('Europe/Helsinki');
+      tzFinland.freeze();
+      expect(diffHrs(utc, new Date()), 'Finland').to.be.within(2, 3);
 
-      tz.freeze(dt);
-      expect(diffHrs(dt, new Date())).to.equal(-7);
+      ck.reset();
+      const tzSweden = ck.timezone('Europe/Stockholm');
+      tzSweden.freeze();
+      expect(diffHrs(utc, new Date()), 'Sweden').to.be.within(1, 2);
 
-      tz.freeze(dsdt);
-      expect(diffHrs(dsdt, new Date())).to.equal(-7);
+      ck.reset();
+      const tzLA = ck.timezone('America/Los_Angeles');
+      tzLA.freeze();
+      expect(diffHrs(utc, new Date()), 'LA').to.equal(-7);
+
+      ck.reset();
+      const tzShanghai = ck.timezone('Asia/Shanghai');
+      tzShanghai.freeze();
+      expect(diffHrs(utc, new Date()), 'Shanghai').to.equal(7);
     });
 
-    it('returns date adjusted for GMT/UTC', () => {
-      const now = Date.now();
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
-      const dsdt = Date.UTC(2021, 7, 20, 0, 2, 0, 123);
+    it('if already frozen moves now to timezone', () => {
+      const utc = Date.now();
 
-      const tz = ck.timezone('UTC');
-      tz.freeze(now);
-      expect(diffHrs(now, new Date()), 'now').to.equal(0);
+      const tzFinland = ck.timezone('Europe/Helsinki');
+      tzFinland.freeze();
+      expect(diffHrs(utc, new Date()), 'Finland').to.be.within(2, 3);
 
-      tz.freeze(dt);
-      expect(diffHrs(dt, new Date()), 'March').to.equal(0);
-
-      tz.freeze(dsdt);
-      expect(diffHrs(dsdt, new Date()), 'August').to.equal(0);
+      const tzSweden = ck.timezone('Europe/Stockholm');
+      tzSweden.freeze();
+      expect(diffHrs(utc, new Date()), 'Sweden').to.equal(4);
     });
 
-    it('returns date adjusted for Shanghai', () => {
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
-      const dsdt = Date.UTC(2021, 7, 20, 0, 2, 0, 123);
+    it('returns date adjusted to timezone', () => {
+      const utc = Date.UTC(2021, 7, 26, 18, 0);
 
-      const tz = ck.timezone('Asia/Shanghai');
-      tz.freeze(dt);
-      expect(diffHrs(dt, new Date())).to.equal(8);
+      const tzFinland = ck.timezone('Europe/Helsinki');
+      const tzSweden = ck.timezone('Europe/Stockholm');
+      const tzLA = ck.timezone('America/Los_Angeles');
+      const tzShanghai = ck.timezone('Asia/Shanghai');
 
-      tz.freeze(dsdt);
-      expect(diffHrs(dsdt, new Date())).to.equal(8);
+      const fdate = tzFinland.freeze(2021, 7, 26, 18, 0);
+      const sdate = tzSweden.freeze(2021, 7, 26, 18, 0);
+      const ldate = tzLA.freeze(2021, 7, 26, 18, 0);
+      const adate = tzShanghai.freeze(2021, 7, 26, 18, 0);
+
+      expect(diffHrs(utc, fdate), 'Finland').to.equal(-3);
+      expect(diffHrs(utc, sdate), 'Sweden').to.equal(-2);
+      expect(diffHrs(utc, ldate), 'LA').to.equal(7);
+      expect(diffHrs(utc, adate), 'Shanghai').to.equal(-8);
+
+      expect(diffHrs(fdate, sdate)).to.equal(1);
     });
 
-    it('really freezes date', async () => {
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
+    it('returns date adjusted to timezone with daylight saving', () => {
+      const utc = Date.UTC(2021, 2, 26, 18, 0);
 
-      const tz = ck.timezone('Asia/Shanghai');
-      tz.freeze(dt);
-      expect(diffHrs(dt, new Date())).to.equal(8);
+      const tzFinland = ck.timezone('Europe/Helsinki');
+      const tzSweden = ck.timezone('Europe/Stockholm');
+      const tzLA = ck.timezone('America/Los_Angeles');
+      const tzShanghai = ck.timezone('Asia/Shanghai');
 
-      const before = Date.now();
+      const fdate = tzFinland.freeze(2021, 2, 26, 18, 0);
+      const sdate = tzSweden.freeze(2021, 2, 26, 18, 0);
+      const ldate = tzLA.freeze(2021, 2, 26, 18, 0);
+      const adate = tzShanghai.freeze(2021, 2, 26, 18, 0);
 
-      await new Promise((resolve) => {
-        setTimeout(resolve, 100);
-      });
+      expect(diffHrs(utc, fdate), 'Finland').to.equal(-2);
+      expect(diffHrs(utc, sdate), 'Sweden').to.equal(-1);
+      expect(diffHrs(utc, ldate), 'LA').to.equal(7);
+      expect(diffHrs(utc, adate), 'Shanghai').to.equal(-8);
 
-      expect(Date.now()).to.equal(before);
+      expect(diffHrs(fdate, sdate)).to.equal(1);
     });
 
     it('starts ticking when defrost is called', async () => {
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
+      const utc = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
 
       const tz = ck.timezone('Asia/Shanghai');
-      tz.freeze(dt);
-      expect(diffHrs(dt, new Date())).to.equal(8);
+      tz.freeze(2021, 2, 20, 0, 1, 0, 123);
+      expect(diffHrs(utc, new Date())).to.equal(-8);
 
       const before = Date.now();
       tz.defrost();
@@ -128,86 +144,107 @@ describe('chronokinesis', () => {
     });
 
     it('works in combination with freeze', async () => {
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
-      ck.freeze(dt);
+      const utc = Date.UTC(2021, 2, 27, 8, 1, 0, 123);
+      ck.freeze(utc);
 
+      const tz = ck.timezone('America/Los_Angeles');
+      tz.freeze(2021, 2, 27, 8, 1, 0, 123);
+      expect(diffHrs(utc, new Date())).to.equal(7);
+    });
+
+    it('freeze after freeze without arguments is ignored', async () => {
+      const utc = Date.now();
       const tz = ck.timezone('Asia/Shanghai');
-      tz.freeze(dt);
-      expect(diffHrs(dt, new Date())).to.equal(8);
+      tz.freeze();
+      expect(diffHrs(utc, new Date()), '1st').to.equal(7);
+      tz.freeze();
+      expect(diffHrs(utc, new Date()), '2nd').to.equal(7);
     });
   });
 
   describe('#travel in timezone', () => {
     beforeEach(ck.reset);
 
-    it('returns date in adjusted for timezone in timezone with daylight saving', () => {
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
-      const dsdt = Date.UTC(2021, 7, 20, 0, 2, 0, 123);
-
-      const tzSweden = ck.timezone('Europe/Stockholm');
-
-      tzSweden.travel(dt);
-      expect(diffHrs(dt, new Date())).to.equal(1);
-
-      tzSweden.travel(dsdt);
-      expect(diffHrs(dsdt, new Date())).to.equal(2);
+    it('returns date adjusted to timezone', () => {
+      const utc = Date.UTC(2021, 7, 26, 18, 0);
 
       const tzFinland = ck.timezone('Europe/Helsinki');
-      tzFinland.travel(dt);
-      expect(diffHrs(dt, new Date())).to.equal(2);
+      const tzSweden = ck.timezone('Europe/Stockholm');
 
-      tzFinland.travel(dsdt);
-      expect(diffHrs(dsdt, new Date())).to.equal(3);
+      const fdate = tzFinland.travel(2021, 7, 26, 18, 0);
+      const sdate = tzSweden.travel(2021, 7, 26, 18, 0);
+
+      expect(diffHrs(utc, fdate), 'Finland').to.equal(-3);
+      expect(diffHrs(utc, sdate), 'Sweden').to.equal(-2);
+
+      expect(diffHrs(fdate, sdate)).to.equal(1);
     });
 
-    it('returns date adjusted for Los Angeles', () => {
-      const now = Date.now();
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
-      const dsdt = Date.UTC(2021, 7, 20, 0, 2, 0, 123);
+    it('returns date adjusted to timezone with daylight saving', () => {
+      const utc = Date.UTC(2021, 2, 26, 18, 0);
 
-      const tz = ck.timezone('America/Los_Angeles');
-      tz.travel(now);
-      expect(diffHrs(now, new Date())).to.equal(-7);
+      const tzFinland = ck.timezone('Europe/Helsinki');
+      const tzSweden = ck.timezone('Europe/Stockholm');
 
-      tz.travel(dt);
-      expect(diffHrs(dt, new Date())).to.equal(-7);
+      const fdate = tzFinland.travel(2021, 2, 26, 18, 0);
+      const sdate = tzSweden.travel(2021, 2, 26, 18, 0);
 
-      tz.travel(dsdt);
-      expect(diffHrs(dsdt, new Date())).to.equal(-7);
+      expect(diffHrs(utc, fdate), 'Finland').to.equal(-2);
+      expect(diffHrs(utc, sdate), 'Sweden').to.equal(-1);
+
+      expect(diffHrs(fdate, sdate)).to.equal(1);
     });
 
-    it('returns date adjusted for GMT/UTC', () => {
-      const now = Date.now();
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
-      const dsdt = Date.UTC(2021, 7, 20, 0, 2, 0, 123);
+    it('with arguments travels at specified time in timezone', () => {
+      const utc = Date.UTC(2021, 7, 26, 15, 0);
 
-      const tz = ck.timezone('UTC');
-      tz.travel(now);
-      expect(diffHrs(now, new Date()), 'now').to.equal(0);
+      const tzFinland = ck.timezone('Europe/Helsinki');
+      tzFinland.travel(2021, 7, 26, 18, 0);
+      expect(diffHrs(utc, new Date())).to.equal(0);
 
-      tz.travel(dt);
-      expect(diffHrs(dt, new Date()), 'March').to.equal(0);
+      const tzSweden = ck.timezone('Europe/Stockholm');
+      tzSweden.travel(2021, 7, 26, 17, 0);
+      expect(diffHrs(utc, new Date())).to.equal(0);
 
-      tz.travel(dsdt);
-      expect(diffHrs(dsdt, new Date()), 'August').to.equal(0);
+      const tzLA = ck.timezone('America/Los_Angeles');
+      tzLA.travel(2021, 7, 26, 8, 0);
+      expect(diffHrs(utc, new Date())).to.equal(0);
+
+      const tzShanghai = ck.timezone('Asia/Shanghai');
+      tzShanghai.travel(2021, 7, 26, 23, 0);
+      expect(diffHrs(utc, new Date())).to.equal(0);
     });
 
-    it('returns date adjusted for Shanghai', () => {
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
-      const dsdt = Date.UTC(2021, 7, 20, 0, 2, 0, 123);
+    it('starts ticking when defrost is called', async () => {
+      const utc = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
 
       const tz = ck.timezone('Asia/Shanghai');
-      tz.travel(dt);
-      expect(diffHrs(dt, new Date())).to.equal(8);
+      tz.freeze(2021, 2, 20, 0, 1, 0, 123);
+      expect(diffHrs(utc, new Date())).to.equal(-8);
 
-      tz.travel(dsdt);
-      expect(diffHrs(dsdt, new Date())).to.equal(8);
+      const before = Date.now();
+      tz.defrost();
+
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100);
+      });
+
+      expect(Date.now() - before).to.be.above(50);
+    });
+
+    it('works in combination with freeze', async () => {
+      const utc = Date.UTC(2021, 2, 27, 8, 1, 0, 123);
+      ck.freeze(utc);
+
+      const tz = ck.timezone('America/Los_Angeles');
+      tz.freeze(2021, 2, 27, 8, 1, 0, 123);
+      expect(diffHrs(utc, new Date())).to.equal(7);
     });
 
     it('still travels', async () => {
       const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
 
-      const tz = ck.timezone('Asia/Shanghai');
+      const tz = ck.timezone('America/Los_Angeles');
       tz.travel(dt);
       expect(diffHrs(dt, new Date())).to.equal(8);
 
@@ -223,11 +260,11 @@ describe('chronokinesis', () => {
     });
 
     it('works in combination with timezone freeze', async () => {
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
+      const utc = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
 
       const tz = ck.timezone('Asia/Shanghai');
-      tz.travel(dt);
-      expect(diffHrs(dt, new Date())).to.equal(8);
+      tz.travel(2021, 2, 20, 0, 1, 0, 123);
+      expect(diffHrs(utc, new Date())).to.equal(-8);
 
       const before = Date.now();
 
@@ -238,7 +275,7 @@ describe('chronokinesis', () => {
       tz.freeze();
 
       expect(Date.now() - before).to.be.within(50, 200);
-      expect(diffHrs(dt, new Date())).to.equal(8);
+      expect(diffHrs(utc, new Date())).to.equal(-7);
     });
 
     it('works in combination with freeze', async () => {
@@ -247,7 +284,7 @@ describe('chronokinesis', () => {
 
       const tz = ck.timezone('Asia/Shanghai');
       tz.travel(dt);
-      expect(diffHrs(dt, new Date())).to.equal(8);
+      expect(diffHrs(dt, new Date())).to.equal(-7);
     });
 
     it('works in combination with travel', async () => {
@@ -256,33 +293,16 @@ describe('chronokinesis', () => {
 
       const tz = ck.timezone('Asia/Shanghai');
       tz.travel();
-      expect(diffHrs(dt, new Date())).to.equal(0);
-    });
-  });
-
-  describe('#getUTCOffset in milliseconds', () => {
-    beforeEach(ck.reset);
-
-    it('returns offset in milliseconds if called without date', () => {
-      const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
-
-      ck.freeze(dt);
-      expect(ck.timezone('Europe/Stockholm').getUTCOffset()).to.equal(3600000);
-      expect(ck.timezone('Europe/Helsinki').getUTCOffset()).to.equal(2 * 3600000);
-
-      const dsdt = Date.UTC(2021, 7, 20, 0, 2, 0, 123);
-      ck.freeze(dsdt);
-
-      expect(ck.timezone('Europe/Stockholm').getUTCOffset()).to.equal(2 * 3600000);
-      expect(ck.timezone('Europe/Helsinki').getUTCOffset()).to.equal(3 * 3600000);
+      expect(diffHrs(dt, new Date())).to.equal(7);
     });
 
-    it('returns offset in milliseconds if called with date', () => {
-      const dt = Date.UTC(2021, 9, 31, 0, 0, 0);
-      const dsdt = new Date(dt + 2 * 3600000);
-
-      expect(ck.timezone('Europe/Stockholm').getUTCOffset(new Date(dt)), 'daylight saving').to.equal(2 * 3600000);
-      expect(ck.timezone('Europe/Stockholm').getUTCOffset(dsdt), 'outside daylight saving').to.equal(3600000);
+    it('travel after travel without arguments is ignored', async () => {
+      const utc = Date.now();
+      const tz = ck.timezone('Asia/Shanghai');
+      tz.travel();
+      expect(diffHrs(utc, new Date()), '1st').to.equal(7);
+      tz.travel();
+      expect(diffHrs(utc, new Date()), '2nd').to.equal(7);
     });
   });
 });

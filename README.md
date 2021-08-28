@@ -18,7 +18,6 @@ Mock time and date for traveling and freezing. Inspired and borrowed from [timek
     - [timezone `travel([...args])`](#timezone-travelargs)
     - [timezone `reset()`](#timezone-reset)
     - [timezone `defrost()`](#timezone-defrost)
-    - [timezone `getUTCOffset([date])`](#timezone-getutcoffsetdate)
 - [Distributions](#distributions)
   - [Browser](#browser)
   - [Rollup](#rollup)
@@ -195,10 +194,6 @@ Same as [#reset](#reset)
 ### timezone `defrost()`
 
 Same as [#defrost](#defrost)
-
-### timezone `getUTCOffset([date])`
-
-Returns offset from UTC in milliseconds
 
 # Distributions
 
