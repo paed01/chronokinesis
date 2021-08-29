@@ -150,14 +150,15 @@ function FakeDate() {
   }
 
   var dt = instantiate(NativeDate, args);
-
-  dt.getTimezoneOffset = function getTimezoneOffset() {
-    var curr = nativeGetTimezoneOffset.call(this);
-    if (!iana) return curr;
-    var tz = timezone(iana).getTime(this);
-    return Math.round((tz - this.getTime()) / 60000) + curr;
-  };
-
+  Object.defineProperty(dt, 'getTimezoneOffset', {
+    enumerable: false,
+    value: function getTimezoneOffset() {
+      var curr = nativeGetTimezoneOffset.call(this);
+      if (!iana) return curr;
+      var tz = timezone(iana).getTime(this);
+      return Math.round((tz - this.getTime()) / 60000) + curr;
+    }
+  });
   return dt;
 }
 

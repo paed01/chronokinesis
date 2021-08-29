@@ -23,13 +23,16 @@ function FakeDate(...args) {
 
   const dt = instantiate(NativeDate, args);
 
-  dt.getTimezoneOffset = function getTimezoneOffset() {
-    const curr = nativeGetTimezoneOffset.call(this);
-    if (!iana) return curr;
+  Object.defineProperty(dt, 'getTimezoneOffset', {
+    enumerable: false,
+    value: function getTimezoneOffset() {
+      const curr = nativeGetTimezoneOffset.call(this);
+      if (!iana) return curr;
 
-    const tz = timezone(iana).getTime(this);
-    return Math.round((tz - this.getTime()) / 60000) + curr;
-  };
+      const tz = timezone(iana).getTime(this);
+      return Math.round((tz - this.getTime()) / 60000) + curr;
+    },
+  });
 
   return dt;
 }
