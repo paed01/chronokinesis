@@ -52,6 +52,16 @@ describe('chronokinesis', () => {
     it('without arguments freezes moves now to timezone', () => {
       const utc = Date.now();
 
+      const tzLA = ck.timezone('America/Los_Angeles');
+      tzLA.freeze();
+      expect(diffHrs(utc, new Date()), 'LA', new Date().toISOString() + ' -> ' + new Date(utc).toISOString()).to.equal(-7);
+
+      ck.reset();
+      const tzShanghai = ck.timezone('Asia/Shanghai');
+      tzShanghai.freeze();
+      expect(diffHrs(utc, new Date()), 'Shanghai').to.equal(8);
+
+      ck.reset();
       const tzFinland = ck.timezone('Europe/Helsinki');
       tzFinland.freeze();
       expect(diffHrs(utc, new Date()), 'Finland').to.be.within(2, 3);
@@ -60,16 +70,6 @@ describe('chronokinesis', () => {
       const tzSweden = ck.timezone('Europe/Stockholm');
       tzSweden.freeze();
       expect(diffHrs(utc, new Date()), 'Sweden').to.be.within(1, 2);
-
-      ck.reset();
-      const tzLA = ck.timezone('America/Los_Angeles');
-      tzLA.freeze();
-      expect(diffHrs(utc, new Date()), 'LA').to.equal(-7);
-
-      ck.reset();
-      const tzShanghai = ck.timezone('Asia/Shanghai');
-      tzShanghai.freeze();
-      expect(diffHrs(utc, new Date()), 'Shanghai').to.equal(7);
     });
 
     it('if already frozen moves now to timezone', () => {
@@ -81,7 +81,7 @@ describe('chronokinesis', () => {
 
       const tzSweden = ck.timezone('Europe/Stockholm');
       tzSweden.freeze();
-      expect(diffHrs(utc, new Date()), 'Sweden').to.equal(4);
+      expect(diffHrs(utc, new Date()), 'Sweden').to.equal(5);
     });
 
     it('returns date adjusted to timezone', () => {
@@ -156,9 +156,9 @@ describe('chronokinesis', () => {
       const utc = Date.now();
       const tz = ck.timezone('Asia/Shanghai');
       tz.freeze();
-      expect(diffHrs(utc, new Date()), '1st').to.equal(7);
+      expect(diffHrs(utc, new Date()), '1st').to.equal(8);
       tz.freeze();
-      expect(diffHrs(utc, new Date()), '2nd').to.equal(7);
+      expect(diffHrs(utc, new Date()), '2nd').to.equal(8);
     });
   });
 
@@ -245,8 +245,8 @@ describe('chronokinesis', () => {
       const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
 
       const tz = ck.timezone('America/Los_Angeles');
-      tz.travel(dt);
-      expect(diffHrs(dt, new Date())).to.equal(8);
+      tz.travel(2021, 2, 20, 0, 1, 0, 123);
+      expect(diffHrs(dt, new Date())).to.equal(7);
 
       const before = Date.now();
 
@@ -256,7 +256,7 @@ describe('chronokinesis', () => {
 
       expect(Date.now() - before).to.be.above(50);
 
-      expect(diffHrs(dt, new Date())).to.equal(8);
+      expect(diffHrs(dt, new Date())).to.equal(7);
     });
 
     it('works in combination with timezone freeze', async () => {
@@ -275,38 +275,65 @@ describe('chronokinesis', () => {
       tz.freeze();
 
       expect(Date.now() - before).to.be.within(50, 200);
-      expect(diffHrs(utc, new Date())).to.equal(-7);
+      expect(diffHrs(utc, new Date())).to.equal(-8);
     });
 
-    it('works in combination with freeze', async () => {
+    it('works in combination with freeze', () => {
       const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
       ck.freeze(dt);
 
       const tz = ck.timezone('Asia/Shanghai');
-      tz.travel(dt);
-      expect(diffHrs(dt, new Date())).to.equal(-7);
+      tz.travel();
+      expect(diffHrs(dt, new Date())).to.equal(8);
     });
 
-    it('works in combination with travel', async () => {
+    it('works in combination with travel', () => {
       const dt = Date.UTC(2021, 2, 20, 0, 1, 0, 123);
       ck.travel(dt);
 
       const tz = ck.timezone('Asia/Shanghai');
       tz.travel();
-      expect(diffHrs(dt, new Date())).to.equal(7);
+      expect(diffHrs(dt, new Date())).to.equal(8);
     });
 
-    it('travel after travel without arguments is ignored', async () => {
+    it('travel after travel without arguments is ignored', () => {
       const utc = Date.now();
       const tz = ck.timezone('Asia/Shanghai');
       tz.travel();
-      expect(diffHrs(utc, new Date()), '1st').to.equal(7);
+      expect(diffHrs(utc, new Date()), '1st').to.equal(8);
       tz.travel();
-      expect(diffHrs(utc, new Date()), '2nd').to.equal(7);
+      expect(diffHrs(utc, new Date()), '2nd').to.equal(8);
+    });
+  });
+
+  describe('#getTimezoneOffset', () => {
+    beforeEach(ck.reset);
+
+    it('returns offset for current time zone', () => {
+      ck.freeze();
+      expect(new Date().getTimezoneOffset() - new NativeDate().getTimezoneOffset()).to.equal(0);
+    });
+
+    it('returns offset for faked time zone', () => {
+      ck.timezone('Asia/Shanghai').freeze();
+      const date = new Date();
+
+      expect(date.getTimezoneOffset()).to.equal(-480);
+
+      ck.timezone('America/Los_Angeles').travel();
+      expect(new Date().getTimezoneOffset()).to.equal(420);
+    });
+
+    it('returns offset for faked time zone with daylight saving', () => {
+      const tzSweden = ck.timezone('Europe/Stockholm');
+      tzSweden.freeze(2021, 7, 26, 17, 0);
+      expect(new Date().getTimezoneOffset()).to.equal(-120);
+      tzSweden.freeze(2021, 2, 26, 17, 0);
+      expect(new Date().getTimezoneOffset()).to.equal(-60);
     });
   });
 });
 
 function diffHrs(dt, faked) {
-  return ~~((faked.getTime() - new NativeDate(dt).getTime()) / 3600000);
+  return Math.round((new NativeDate(faked).getTime() - new NativeDate(dt).getTime()) / 3600000);
 }

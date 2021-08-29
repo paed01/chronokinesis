@@ -135,6 +135,7 @@ var chronokinesis = (function (exports) {
    * MIT License.
    */
   var NativeDate = Date;
+  var nativeGetTimezoneOffset = NativeDate.prototype.getTimezoneOffset;
   var freezedAt = null;
   var traveledTo = null;
   var started = null;
@@ -146,9 +147,21 @@ var chronokinesis = (function (exports) {
     }
 
     var length = args.length;
-    if (!length && freezedAt) return new NativeDate(freezedAt);
-    if (!length && traveledTo) return new NativeDate(time());
-    return instantiate(NativeDate, args);
+
+    if (!length) {
+      if (freezedAt) args = [freezedAt];else if (traveledTo) args = [time()];
+    }
+
+    var dt = instantiate(NativeDate, args);
+
+    dt.getTimezoneOffset = function getTimezoneOffset() {
+      var curr = nativeGetTimezoneOffset.call(this);
+      if (!iana) return curr;
+      var tz = timezone(iana).getTime(this);
+      return Math.round((tz - this.getTime()) / 60000) + curr;
+    };
+
+    return dt;
   }
 
   FakeDate.UTC = NativeDate.UTC;
@@ -233,6 +246,7 @@ var chronokinesis = (function (exports) {
       defrost: defrost,
       reset: reset,
       isKeepingTime: isKeepingTime,
+      getTime: getTime,
       freeze: freezeInTimezone,
       travel: travelInTimezone
     };
@@ -324,7 +338,7 @@ var chronokinesis = (function (exports) {
       _iterator.f();
     }
 
-    return NativeDate.UTC(year, month, day, hour, minute, second);
+    return NativeDate.UTC(year, month, day, hour, minute, second, dt.getMilliseconds());
   }
   var chronokinesis_1 = chronokinesis.freeze;
   var chronokinesis_2 = chronokinesis.defrost;

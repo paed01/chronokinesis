@@ -7,6 +7,7 @@
 'use strict';
 
 const NativeDate = Date;
+const nativeGetTimezoneOffset = NativeDate.prototype.getTimezoneOffset;
 
 let freezedAt = null;
 let traveledTo = null;
@@ -15,11 +16,22 @@ let iana = null;
 
 function FakeDate(...args) {
   const length = args.length;
+  if (!length) {
+    if (freezedAt) args = [freezedAt];
+    else if (traveledTo) args = [time()];
+  }
 
-  if (!length && freezedAt) return new NativeDate(freezedAt);
-  if (!length && traveledTo) return new NativeDate(time());
+  const dt = instantiate(NativeDate, args);
 
-  return instantiate(NativeDate, args);
+  dt.getTimezoneOffset = function getTimezoneOffset() {
+    const curr = nativeGetTimezoneOffset.call(this);
+    if (!iana) return curr;
+
+    const tz = timezone(iana).getTime(this);
+    return Math.round((tz - this.getTime()) / 60000) + curr;
+  };
+
+  return dt;
 }
 
 FakeDate.UTC = NativeDate.UTC;
@@ -100,6 +112,7 @@ function timezone(timeZone) {
     defrost,
     reset,
     isKeepingTime,
+    getTime,
     freeze: freezeInTimezone,
     travel: travelInTimezone,
   };
@@ -119,9 +132,10 @@ function timezone(timeZone) {
   function getTime(...args) {
     const realDate = instantiate(Date, args);
     const tz = new NativeDate(toUTC(formatter, realDate));
-    if (!args.length) return tz.getTime();
 
+    if (!args.length) return tz.getTime();
     const currentTz = new NativeDate(toUTC(current, realDate));
+
     return realDate.getTime() + currentTz.getTime() - tz.getTime();
   }
 }
@@ -146,6 +160,7 @@ function instantiate(type, args) {
 
 function toUTC(formatter, dt) {
   let year, month, day, hour, minute, second;
+
   for (const {type, value} of formatter.formatToParts(dt)) {
     switch (type) {
       case 'year':
@@ -169,5 +184,5 @@ function toUTC(formatter, dt) {
     }
   }
 
-  return NativeDate.UTC(year, month, day, hour, minute, second);
+  return NativeDate.UTC(year, month, day, hour, minute, second, dt.getMilliseconds());
 }

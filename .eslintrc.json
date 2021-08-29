@@ -17,6 +17,7 @@
     "camelcase": 0,
     "comma-spacing": 2,
     "consistent-return": 0,
+    "constructor-super": 0,
     "curly": [2, "multi-line"],
     "dot-notation": [2, {
       "allowKeywords": true
