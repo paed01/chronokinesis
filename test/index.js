@@ -97,6 +97,15 @@ describe('chronokinesis', () => {
         expect(freeze.getTime()).to.be.above(tt - 1).and.below(tt + 1000);
       }, 10);
     });
+
+    it('freeze to invalid date throws and resets', () => {
+      expect(() => {
+        ck.freeze(NaN);
+      }).to.throw(TypeError);
+
+      expect(Date === NativeDate).to.be.true;
+      expect(Date.now()).to.be.a('number');
+    });
   });
 
   describe('#defrost', () => {
@@ -203,6 +212,14 @@ describe('chronokinesis', () => {
       }, 10);
     });
 
+    it('travel to invalid date throws and resets', () => {
+      expect(() => {
+        ck.travel(NaN);
+      }).to.throw(TypeError);
+
+      expect(Date === NativeDate).to.be.true;
+      expect(Date.now()).to.be.a('number');
+    });
   });
 
   describe('#isKeepingTime', () => {

@@ -159,6 +159,10 @@ function freeze() {
     args[_key2] = arguments[_key2];
   }
   freezedAt = instantiate(Date, args);
+  if (isNaN(freezedAt)) {
+    reset();
+    throw new TypeError('Chronokinesis cannot freeze to invalid date, check your arguments. Chronokinesis is reset');
+  }
   return freezedAt;
 }
 function defrost() {
@@ -170,6 +174,10 @@ function travel() {
     args[_key3] = arguments[_key3];
   }
   var travelToDate = instantiate(Date, args);
+  if (isNaN(travelToDate)) {
+    reset();
+    throw new TypeError('Chronokinesis cannot travel to invalid date, check your arguments. Chronokinesis is reset');
+  }
   traveledTo = travelToDate.getTime();
   started = NativeDate.now();
   if (freezedAt) {

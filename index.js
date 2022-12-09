@@ -59,6 +59,10 @@ module.exports = {
 function freeze(...args) {
   useFakeDate();
   freezedAt = instantiate(Date, args);
+  if (isNaN(freezedAt)) {
+    reset();
+    throw new TypeError('Chronokinesis cannot freeze to invalid date, check your arguments. Chronokinesis is reset');
+  }
   return freezedAt;
 }
 
@@ -68,8 +72,11 @@ function defrost() {
 
 function travel(...args) {
   useFakeDate();
-
   const travelToDate = instantiate(Date, args);
+  if (isNaN(travelToDate)) {
+    reset();
+    throw new TypeError('Chronokinesis cannot travel to invalid date, check your arguments. Chronokinesis is reset');
+  }
 
   traveledTo = travelToDate.getTime();
   started = NativeDate.now();
