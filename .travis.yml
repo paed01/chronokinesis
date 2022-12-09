@@ -3,6 +3,7 @@ node_js:
 - '12'
 - '14'
 - '16'
+- '18'
 script: npm run test:lcov
 after_success:
 - npm install coveralls

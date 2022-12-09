@@ -17,10 +17,11 @@
   "scripts": {
     "toc": "node generate-api-toc.js",
     "test": "mocha",
-    "posttest": "npm run lint && npm run prepare",
     "lint": "eslint . --cache",
     "test:lcov": "c8 -r lcov mocha && npm run lint",
-    "prepare": "npm run toc && rollup -c"
+    "posttest": "npm run lint && npm run dist",
+    "prepublishOnly": "npm run dist",
+    "dist": "npm run toc && rollup -c"
   },
   "files": [
     "index.js",
@@ -45,6 +46,8 @@
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^23.0.4",
     "c8": "^7.12.0",
     "chai": "^4.3.7",
     "eslint": "^8.29.0",

@@ -112,12 +112,6 @@ function _toPropertyKey(arg) {
   return typeof key === "symbol" ? key : String(key);
 }
 
-/**
- * Inspired by Time keeper - EEasy testing of time-dependent code.
- *
- * Veselin Todorov <hi@vesln.com>
- * MIT License.
- */
 var NativeDate = Date;
 var nativeGetTimezoneOffset = NativeDate.prototype.getTimezoneOffset;
 var freezedAt = null;
@@ -290,11 +284,5 @@ function toUTC(formatter, dt) {
   }
   return NativeDate.UTC(year, month, day, hour, minute, second, dt.getMilliseconds());
 }
-var chronokinesis_1 = chronokinesis.freeze;
-var chronokinesis_2 = chronokinesis.defrost;
-var chronokinesis_3 = chronokinesis.travel;
-var chronokinesis_4 = chronokinesis.reset;
-var chronokinesis_5 = chronokinesis.isKeepingTime;
-var chronokinesis_6 = chronokinesis.timezone;
 
-export { chronokinesis as default, chronokinesis_2 as defrost, chronokinesis_1 as freeze, chronokinesis_5 as isKeepingTime, chronokinesis_4 as reset, chronokinesis_6 as timezone, chronokinesis_3 as travel };
+export { chronokinesis as default };

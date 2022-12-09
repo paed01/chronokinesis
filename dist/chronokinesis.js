@@ -115,12 +115,6 @@ var chronokinesis = (function (exports) {
     return typeof key === "symbol" ? key : String(key);
   }
 
-  /**
-   * Inspired by Time keeper - EEasy testing of time-dependent code.
-   *
-   * Veselin Todorov <hi@vesln.com>
-   * MIT License.
-   */
   var NativeDate = Date;
   var nativeGetTimezoneOffset = NativeDate.prototype.getTimezoneOffset;
   var freezedAt = null;
@@ -293,20 +287,8 @@ var chronokinesis = (function (exports) {
     }
     return NativeDate.UTC(year, month, day, hour, minute, second, dt.getMilliseconds());
   }
-  var chronokinesis_1 = chronokinesis.freeze;
-  var chronokinesis_2 = chronokinesis.defrost;
-  var chronokinesis_3 = chronokinesis.travel;
-  var chronokinesis_4 = chronokinesis.reset;
-  var chronokinesis_5 = chronokinesis.isKeepingTime;
-  var chronokinesis_6 = chronokinesis.timezone;
 
   exports.default = chronokinesis;
-  exports.defrost = chronokinesis_2;
-  exports.freeze = chronokinesis_1;
-  exports.isKeepingTime = chronokinesis_5;
-  exports.reset = chronokinesis_4;
-  exports.timezone = chronokinesis_6;
-  exports.travel = chronokinesis_3;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
