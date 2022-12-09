@@ -69,6 +69,7 @@
     "no-shadow-restricted-names": 2,
     "no-spaced-func": 2,
     "no-trailing-spaces": 2,
+    "no-undef": 2,
     "no-undef-init": 2,
     "no-underscore-dangle": 0,
     "no-unused-expressions": 2,
@@ -78,6 +79,7 @@
     "prefer-arrow-callback": 2,
     "prefer-const": ["error", {"destructuring": "all"}],
     "quotes": [2, "single"],
+    "require-await": 2,
     "semi": [2, "always"],
     "semi-spacing": [2, {
       "before": false,

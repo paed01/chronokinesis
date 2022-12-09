@@ -1,8 +1,6 @@
 'use strict';
 
-const Lab = require('@hapi/lab');
 const moment = require('moment');
-const {expect} = require('@hapi/code');
 
 const _ = {
   cloneDeep: require('lodash.clonedeep'),
@@ -10,8 +8,6 @@ const _ = {
 };
 
 const NativeDate = Date;
-const {afterEach, beforeEach, describe, it} = exports.lab = Lab.script();
-
 const ck = require('..');
 
 describe('chronokinesis', () => {
@@ -78,7 +74,8 @@ describe('chronokinesis', () => {
       const freeze = ck.freeze();
 
       return postpone(() => {
-        expect(freeze.getTime()).to.be.about(traveledTo.getTime(), 1000);
+        const tt = traveledTo.getTime();
+        expect(freeze.getTime()).to.be.above(tt - 1).and.below(tt + 1000);
       }, 10);
     });
 
@@ -87,7 +84,7 @@ describe('chronokinesis', () => {
       const freeze = ck.freeze(1980, 0, 1);
 
       return postpone(() => {
-        expect(freeze.getTime()).to.be.about(freeze.getTime(), 1000);
+        expect(freeze.getTime()).to.equal(freeze.getTime());
       }, 10);
     });
 
@@ -96,7 +93,8 @@ describe('chronokinesis', () => {
       const freeze = ck.freeze(new Date());
 
       return postpone(() => {
-        expect(freeze.getTime()).to.be.about(traveled.getTime(), 1000);
+        const tt = traveled.getTime();
+        expect(freeze.getTime()).to.be.above(tt - 1).and.below(tt + 1000);
       }, 10);
     });
   });
@@ -111,7 +109,7 @@ describe('chronokinesis', () => {
 
       return postpone(() => {
         expect((new Date()).getTime()).to.be.above(freeze.getTime());
-        expect(ck.isKeepingTime()).to.be.true();
+        expect(ck.isKeepingTime()).to.be.true;
       }, 10);
     });
 
@@ -122,8 +120,8 @@ describe('chronokinesis', () => {
       ck.defrost();
 
       return postpone(() => {
-        expect((new Date()).getTime()).to.be.above(traveled);
-        expect((new Date()).getTime()).to.be.about(traveled, 1000);
+        expect((new Date()).getTime()).to.be.above(traveled - 1);
+        expect((new Date()).getTime()).to.be.below(traveled + 1000);
       }, 10);
     });
   });
@@ -212,16 +210,16 @@ describe('chronokinesis', () => {
 
     it('returns true when frozen', () => {
       ck.freeze();
-      expect(ck.isKeepingTime()).to.be.true();
+      expect(ck.isKeepingTime()).to.be.true;
     });
 
     it('returns true when traveled', () => {
       ck.travel('1972-1-1');
-      expect(ck.isKeepingTime()).to.be.true();
+      expect(ck.isKeepingTime()).to.be.true;
     });
 
     it('but false when reset', () => {
-      expect(ck.isKeepingTime()).to.be.false();
+      expect(ck.isKeepingTime()).to.be.false;
     });
   });
 
@@ -240,14 +238,15 @@ describe('chronokinesis', () => {
       expect(Date.constructor).to.equal(NativeDate.constructor);
       expect(Date.constructor.prototype).to.equal(NativeDate.constructor.prototype);
 
-      expect(new Date()).to.be.instanceOf(NativeDate).and.not.a.function();
+      expect(new Date()).to.be.instanceOf(NativeDate).and.not.be.a('function');
     });
 
     it('after reset in combination with lodash cloneDeep returns native Date', () => {
       const content = _.assign(_.cloneDeep({
         d: new Date()
       }));
-      expect(content.d).to.not.be.a.function().and.instanceOf(NativeDate);
+      expect(content.d).to.not.be.a('function');
+      expect(content.d).to.be.instanceOf(NativeDate);
     });
 
     it('resets frozen time', () => {
@@ -317,7 +316,7 @@ describe('chronokinesis', () => {
     describe('parse', () => {
       it('returns milliseconds', () => {
         ck.freeze();
-        expect(Date.parse('1/1/1970')).to.be.a.number();
+        expect(Date.parse('1/1/1970')).to.be.a('number');
       });
 
       it('or NaN if invalid date', () => {
@@ -325,7 +324,7 @@ describe('chronokinesis', () => {
 
         const result = Date.parse('13/13/1970');
 
-        expect(isNaN(result)).to.be.true();
+        expect(isNaN(result)).to.be.true;
       });
     });
 
@@ -354,52 +353,52 @@ describe('chronokinesis', () => {
 
         const fakeDate = new Date();
 
-        expect(fakeDate.getDate, 'getDate').to.be.a.function();
-        expect(fakeDate.getDay, 'getDay').to.be.a.function();
-        expect(fakeDate.getFullYear, 'getFullYear').to.be.a.function();
-        expect(fakeDate.getHours, 'getHours').to.be.a.function();
-        expect(fakeDate.getMilliseconds, 'getMilliseconds').to.be.a.function();
-        expect(fakeDate.getMinutes, 'getMinutes').to.be.a.function();
-        expect(fakeDate.getMonth, 'getMonth').to.be.a.function();
-        expect(fakeDate.getSeconds, 'getSeconds').to.be.a.function();
-        expect(fakeDate.getTime, 'getTime').to.be.a.function();
-        expect(fakeDate.getTimezoneOffset, 'getTimezoneOffset').to.be.a.function();
-        expect(fakeDate.getUTCDate, 'getUTCDate').to.be.a.function();
-        expect(fakeDate.getUTCDay, 'getUTCDay').to.be.a.function();
-        expect(fakeDate.getUTCFullYear, 'getUTCFullYear').to.be.a.function();
-        expect(fakeDate.getUTCHours, 'getUTCHours').to.be.a.function();
-        expect(fakeDate.getUTCMilliseconds, 'getUTCMilliseconds').to.be.a.function();
-        expect(fakeDate.getUTCMinutes, 'getUTCMinutes').to.be.a.function();
-        expect(fakeDate.getUTCMonth, 'getUTCMonth').to.be.a.function();
-        expect(fakeDate.getUTCSeconds, 'getUTCSeconds').to.be.a.function();
-        expect(fakeDate.getYear, 'getYear').to.be.a.function();
-        expect(fakeDate.setDate, 'setDate').to.be.a.function();
-        expect(fakeDate.setFullYear, 'setFullYear').to.be.a.function();
-        expect(fakeDate.setHours, 'setHours').to.be.a.function();
-        expect(fakeDate.setMilliseconds, 'setMilliseconds').to.be.a.function();
-        expect(fakeDate.setMinutes, 'setMinutes').to.be.a.function();
-        expect(fakeDate.setMonth, 'setMonth').to.be.a.function();
-        expect(fakeDate.setSeconds, 'setSeconds').to.be.a.function();
-        expect(fakeDate.setTime, 'setTime').to.be.a.function();
-        expect(fakeDate.setUTCDate, 'setUTCDate').to.be.a.function();
-        expect(fakeDate.setUTCFullYear, 'setUTCFullYear').to.be.a.function();
-        expect(fakeDate.setUTCHours, 'setUTCHours').to.be.a.function();
-        expect(fakeDate.setUTCMilliseconds, 'setUTCMilliseconds').to.be.a.function();
-        expect(fakeDate.setUTCMinutes, 'setUTCMinutes').to.be.a.function();
-        expect(fakeDate.setUTCMonth, 'setUTCMonth').to.be.a.function();
-        expect(fakeDate.setUTCSeconds, 'setUTCSeconds').to.be.a.function();
-        expect(fakeDate.setYear, 'setYear').to.be.a.function();
-        expect(fakeDate.toDateString, 'toDateString').to.be.a.function();
-        expect(fakeDate.toGMTString, 'toGMTString').to.be.a.function();
-        expect(fakeDate.toISOString, 'toISOString').to.be.a.function();
-        expect(fakeDate.toJSON, 'toJSON').to.be.a.function();
-        expect(fakeDate.toLocaleDateString, 'toLocaleDateString').to.be.a.function();
-        expect(fakeDate.toLocaleString, 'toLocaleString').to.be.a.function();
-        expect(fakeDate.toLocaleTimeString, 'toLocaleTimeString').to.be.a.function();
-        expect(fakeDate.toString, 'toString').to.be.a.function();
-        expect(fakeDate.toTimeString, 'toTimeString').to.be.a.function();
-        expect(fakeDate.toUTCString, 'toUTCString').to.be.a.function();
-        expect(fakeDate.valueOf, 'valueOf').to.be.a.function();
+        expect(fakeDate.getDate, 'getDate').to.be.a('function');
+        expect(fakeDate.getDay, 'getDay').to.be.a('function');
+        expect(fakeDate.getFullYear, 'getFullYear').to.be.a('function');
+        expect(fakeDate.getHours, 'getHours').to.be.a('function');
+        expect(fakeDate.getMilliseconds, 'getMilliseconds').to.be.a('function');
+        expect(fakeDate.getMinutes, 'getMinutes').to.be.a('function');
+        expect(fakeDate.getMonth, 'getMonth').to.be.a('function');
+        expect(fakeDate.getSeconds, 'getSeconds').to.be.a('function');
+        expect(fakeDate.getTime, 'getTime').to.be.a('function');
+        expect(fakeDate.getTimezoneOffset, 'getTimezoneOffset').to.be.a('function');
+        expect(fakeDate.getUTCDate, 'getUTCDate').to.be.a('function');
+        expect(fakeDate.getUTCDay, 'getUTCDay').to.be.a('function');
+        expect(fakeDate.getUTCFullYear, 'getUTCFullYear').to.be.a('function');
+        expect(fakeDate.getUTCHours, 'getUTCHours').to.be.a('function');
+        expect(fakeDate.getUTCMilliseconds, 'getUTCMilliseconds').to.be.a('function');
+        expect(fakeDate.getUTCMinutes, 'getUTCMinutes').to.be.a('function');
+        expect(fakeDate.getUTCMonth, 'getUTCMonth').to.be.a('function');
+        expect(fakeDate.getUTCSeconds, 'getUTCSeconds').to.be.a('function');
+        expect(fakeDate.getYear, 'getYear').to.be.a('function');
+        expect(fakeDate.setDate, 'setDate').to.be.a('function');
+        expect(fakeDate.setFullYear, 'setFullYear').to.be.a('function');
+        expect(fakeDate.setHours, 'setHours').to.be.a('function');
+        expect(fakeDate.setMilliseconds, 'setMilliseconds').to.be.a('function');
+        expect(fakeDate.setMinutes, 'setMinutes').to.be.a('function');
+        expect(fakeDate.setMonth, 'setMonth').to.be.a('function');
+        expect(fakeDate.setSeconds, 'setSeconds').to.be.a('function');
+        expect(fakeDate.setTime, 'setTime').to.be.a('function');
+        expect(fakeDate.setUTCDate, 'setUTCDate').to.be.a('function');
+        expect(fakeDate.setUTCFullYear, 'setUTCFullYear').to.be.a('function');
+        expect(fakeDate.setUTCHours, 'setUTCHours').to.be.a('function');
+        expect(fakeDate.setUTCMilliseconds, 'setUTCMilliseconds').to.be.a('function');
+        expect(fakeDate.setUTCMinutes, 'setUTCMinutes').to.be.a('function');
+        expect(fakeDate.setUTCMonth, 'setUTCMonth').to.be.a('function');
+        expect(fakeDate.setUTCSeconds, 'setUTCSeconds').to.be.a('function');
+        expect(fakeDate.setYear, 'setYear').to.be.a('function');
+        expect(fakeDate.toDateString, 'toDateString').to.be.a('function');
+        expect(fakeDate.toGMTString, 'toGMTString').to.be.a('function');
+        expect(fakeDate.toISOString, 'toISOString').to.be.a('function');
+        expect(fakeDate.toJSON, 'toJSON').to.be.a('function');
+        expect(fakeDate.toLocaleDateString, 'toLocaleDateString').to.be.a('function');
+        expect(fakeDate.toLocaleString, 'toLocaleString').to.be.a('function');
+        expect(fakeDate.toLocaleTimeString, 'toLocaleTimeString').to.be.a('function');
+        expect(fakeDate.toString, 'toString').to.be.a('function');
+        expect(fakeDate.toTimeString, 'toTimeString').to.be.a('function');
+        expect(fakeDate.toUTCString, 'toUTCString').to.be.a('function');
+        expect(fakeDate.valueOf, 'valueOf').to.be.a('function');
       });
     });
   });
@@ -421,7 +420,7 @@ describe('chronokinesis', () => {
 
         return new Promise((resolve) => {
           setTimeout(() => {
-            expect(isReset).to.be.false();
+            expect(isReset).to.be.false;
             resolve();
           }, 10);
         });
@@ -434,7 +433,7 @@ describe('chronokinesis', () => {
 
         return new Promise((resolve) => {
           setImmediate(() => {
-            expect(isReset).to.be.false();
+            expect(isReset).to.be.false;
             resolve();
           });
         });
@@ -456,7 +455,7 @@ describe('chronokinesis', () => {
               resolve();
             }
 
-            expect(isReset).to.be.false();
+            expect(isReset).to.be.false;
 
             count--;
           }
@@ -487,7 +486,7 @@ describe('chronokinesis', () => {
 
       ck.travel(momentDate);
 
-      expect((new Date()).getTime()).to.be.about(momentDate.valueOf(), 1000);
+      expect((new Date()).getTime()).to.be.equal(momentDate.valueOf());
     });
 
     it('freezes when used as argument', () => {
