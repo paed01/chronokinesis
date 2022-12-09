@@ -9,7 +9,7 @@ module.exports = {
     commonjs({
       sourceMap: false
     }),
-    babel()
+    babel({ babelHelpers: 'bundled' })
   ],
   output: [
     {
