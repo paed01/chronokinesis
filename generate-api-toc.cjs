@@ -1,4 +1,3 @@
-'use strict';
 // From https://github.com/hapijs/joi/blob/master/generate-readme-toc.js
 
 const Toc = require('markdown-toc');
@@ -6,7 +5,7 @@ const Fs = require('fs');
 const Package = require('./package.json');
 
 const internals = {
-  filename: './README.md'
+  filename: './README.md',
 };
 
 internals.generate = function() {
@@ -18,7 +17,7 @@ internals.generate = function() {
       return text.toLowerCase()
         .replace(/\s/g, '-')
         .replace(/[^\w-]/g, '');
-    }
+    },
   };
 
   const output = Toc.insert(api, tocOptions)
