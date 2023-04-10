@@ -1,14 +1,13 @@
-'use strict';
-
-const moment = require('moment');
+import moment from 'moment';
+import cloneDeep from 'lodash.clonedeep';
+import * as ck from '../index.js';
 
 const _ = {
-  cloneDeep: require('lodash.clonedeep'),
-  assign: Object.assign
+  cloneDeep,
+  assign: Object.assign,
 };
 
 const NativeDate = Date;
-const ck = require('..');
 
 describe('chronokinesis', () => {
   describe('#freeze', () => {
@@ -260,7 +259,7 @@ describe('chronokinesis', () => {
 
     it('after reset in combination with lodash cloneDeep returns native Date', () => {
       const content = _.assign(_.cloneDeep({
-        d: new Date()
+        d: new Date(),
       }));
       expect(content.d).to.not.be.a('function');
       expect(content.d).to.be.instanceOf(NativeDate);

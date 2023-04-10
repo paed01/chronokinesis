@@ -1,23 +1,36 @@
 {
+  "parser": "espree",
   "parserOptions": {
-    "ecmaVersion": 2020,
-    "ecmaFeatures": {
-      "experimentalObjectRestSpread": true
-    }
+    "sourceType": "module",
+    "ecmaVersion": 2018
   },
   "env": {
-    "node": true,
-    "es6": true
+    "es6": true,
+    "shared-node-browser": true
   },
   "extends": "eslint:recommended",
   "rules": {
     "brace-style": [2, "1tbs", {
       "allowSingleLine": false
     }],
-    "camelcase": 0,
+    "camelcase": [
+      "error",
+      {
+        "properties": "never"
+      }
+    ],
+    "comma-dangle": [
+      "warn",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "ignore",
+        "exports": "ignore",
+        "functions": "ignore"
+      }
+    ],
     "comma-spacing": 2,
     "consistent-return": 0,
-    "constructor-super": 0,
     "curly": [2, "multi-line"],
     "dot-notation": [2, {
       "allowKeywords": true
@@ -33,6 +46,7 @@
       "afterColon": true
     }],
     "keyword-spacing": 2,
+    "max-len": 0,
     "new-cap": 0,
     "new-parens": 2,
     "no-alert": 2,
@@ -51,15 +65,15 @@
     "no-label-var": 2,
     "no-lone-blocks": 2,
     "no-loop-func": 2,
+    "no-multi-spaces": 2,
+    "no-multi-str": 2,
     "no-multiple-empty-lines": [ "error", {
       "max": 1,
       "maxEOF": 0,
       "maxBOF": 0
     } ],
-    "no-multi-spaces": 2,
-    "no-multi-str": 2,
     "no-native-reassign": 0,
-    "no-new": 2,
+    "no-new": 0,
     "no-new-func": 2,
     "no-new-object": 2,
     "no-new-wrappers": 2,
@@ -67,6 +81,7 @@
     "no-path-concat": 2,
     "no-process-exit": 2,
     "no-proto": 2,
+    "no-prototype-builtins": 2,
     "no-return-assign": 2,
     "no-script-url": 2,
     "no-sequences": 2,
@@ -78,12 +93,13 @@
     "no-undef-init": 2,
     "no-underscore-dangle": 0,
     "no-unused-expressions": 2,
-    "no-use-before-define": [2, "nofunc"],
+    "no-use-before-define": 0,
     "no-var": 2,
     "no-with": 2,
     "prefer-arrow-callback": 2,
     "prefer-const": ["error", {"destructuring": "all"}],
     "quotes": [2, "single"],
+    "require-atomic-updates": 0,
     "require-await": 2,
     "semi": [2, "always"],
     "semi-spacing": [2, {

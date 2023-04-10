@@ -1,6 +1,6 @@
 chronokinesis
 =============
-[![Build Status](https://app.travis-ci.com/paed01/chronokinesis.svg?branch=master)](https://app.travis-ci.com/paed01/chronokinesis) [![Coverage Status](https://coveralls.io/repos/github/paed01/chronokinesis/badge.svg?branch=master)](https://coveralls.io/github/paed01/chronokinesis?branch=master)
+[![Build](https://github.com/paed01/chronokinesis/actions/workflows/build.yaml/badge.svg)](https://github.com/paed01/chronokinesis/actions/workflows/build.yaml) [![Coverage Status](https://coveralls.io/repos/github/paed01/chronokinesis/badge.svg?branch=master)](https://coveralls.io/github/paed01/chronokinesis?branch=master)
 
 Mock time and date for traveling and freezing. Inspired and borrowed from [timekeeper](https://github.com/vesln/timekeeper).
 
@@ -19,8 +19,8 @@ Mock time and date for traveling and freezing. Inspired and borrowed from [timek
     - [timezone `reset()`](#timezone-reset)
     - [timezone `defrost()`](#timezone-defrost)
 - [Distributions](#distributions)
-  - [Browser](#browser)
-  - [Rollup](#rollup)
+  - [Nodejs require](#nodejs-require)
+  - [Browser (UMD)](#browser-umd)
 - [Acknowledgements](#acknowledgements)
 
 <!-- tocstop -->
@@ -30,7 +30,7 @@ Mock time and date for traveling and freezing. Inspired and borrowed from [timek
 Mock `Date` and `Date.now` in order to help you test time-dependent code. Provides `travel`, `freeze`, and timezone functionality for your Node.js tests.
 
 ```javascript
-const ck = require('chronokinesis');
+import * as ck from 'chronokinesis';
 
 ck.freeze();
 
@@ -45,8 +45,8 @@ setTimeout(() => {
 or use with [`moment`](http://momentjs.com):
 
 ```javascript
-const moment = require('moment');
-const ck = require('chronokinesis');
+import moment from 'moment';
+import * as ck from 'chronokinesis';
 
 ck.travel(moment().add(1, 'year'));
 
@@ -67,7 +67,7 @@ Freeze point in time. Calls can be made with the same arguments as the `Date` co
 - `...args`: Optional date constructor arguments, if empty stops time at now
 
 ```javascript
-const ck = require('chronokinesis');
+import * as ck from 'chronokinesis';
 
 ck.freeze('1942-01-08');
 
@@ -86,7 +86,7 @@ Time travel to another era. Calls can be made with the same arguments as the `Da
 - `...args`: Optional date constructor arguments, pretty useless if empty but won´t crash
 
 ```javascript
-const ck = require('chronokinesis');
+import * as ck from 'chronokinesis';
 let date = new Date(2018, 0, 31);
 
 ck.travel(date);
@@ -100,8 +100,8 @@ setTimeout(function() {
 When used in combination with [`freeze`](#freeze) the time is still frozen but at the travelled time().
 
 ```javascript
-const ck = require('chronokinesis');
-const moment = require('moment');
+import * as ck from 'chronokinesis';
+import moment from 'moment';
 
 let date = new Date(2018, 0, 31);
 
@@ -121,7 +121,7 @@ setTimeout(function() {
 Defrost a frozen point in time. Used in combination with travelling will start ticking the clock.
 
 ```javascript
-const ck = require('chronokinesis');
+import * as ck from 'chronokinesis';
 
 ck.freeze(1980, 0, 1);
 
@@ -144,7 +144,7 @@ setTimeout(() => {
 Resets Date to current glory.
 
 ```javascript
-const ck = require('chronokinesis');
+import * as ck from 'chronokinesis';
 
 ck.freeze(2060, 0, 1);
 console.log(`end of time is reached at ${new Date()} according to Newton`)
@@ -160,7 +160,7 @@ console.log(new Date())
 Utility function to see if we still travel or freeze time.
 
 ```javascript
-const ck = require('chronokinesis');
+import * as ck from 'chronokinesis';
 
 console.log(ck.isKeepingTime() ? 'Is' : 'Not', 'keeping time');
 ck.travel(1893448800000);
@@ -172,7 +172,7 @@ console.log(ck.isKeepingTime() ? 'Is' : 'Not', 'keeping time');
 Freeze and travel in different time zones.
 
 ```javascript
-const ck = require('chronokinesis');
+import * as ck from 'chronokinesis';
 
 const tz = ck.timezone('Asia/Shanghai');
 
@@ -197,15 +197,17 @@ Same as [#defrost](#defrost)
 
 # Distributions
 
-The module is prepared for browser and [rollup](https://github.com/rollup/rollup).
+The module is prepared for browser and nodejs.
 
-## Browser
+## Nodejs require
 
-Use `dist/chronokinesis.js`. Sets global property `chronokinesis`.
+```js
+const ck = require('chronokinesis');
+```
 
-## Rollup
+## Browser (UMD)
 
-`jsnext:main: dist/index.es.js`
+Use `dist/chronokinesis.cjs`. Sets global property `chronokinesis`.
 
 # Acknowledgements
 

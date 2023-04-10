@@ -1,32 +1,36 @@
 {
   "name": "chronokinesis",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "Module for testing time-dependent code",
   "author": {
     "name": "Pål Edman",
     "url": "https://github.com/paed01"
   },
   "license": "MIT",
-  "main": "index.js",
-  "browser": "dist/chronokinesis.js",
-  "jsnext:main": "dist/index.es.js",
+  "type": "module",
+  "module": "index.js",
+  "main": "dist/main.cjs",
+  "browser": "dist/chronokinesis.cjs",
+  "jsnext:main": "index.js",
+  "sideEffects": true,
   "repository": {
     "type": "git",
     "url": "git://github.com/paed01/chronokinesis"
   },
   "scripts": {
-    "toc": "node generate-api-toc.js",
+    "toc": "node generate-api-toc.cjs",
     "test": "mocha",
     "lint": "eslint . --cache",
-    "test:lcov": "c8 -r lcov mocha && npm run lint",
+    "test:lcov": "c8 -r lcov -r text mocha && npm run lint",
     "posttest": "npm run lint && npm run dist",
-    "prepublishOnly": "npm run dist",
+    "prepack": "npm run dist",
     "dist": "npm run toc && rollup -c"
   },
   "files": [
     "index.js",
-    "dist/chronokinesis.js",
-    "dist/index.es.js"
+    "index.d.ts",
+    "dist/chronokinesis.cjs",
+    "dist/index.cjs"
   ],
   "bugs": {
     "url": "https://github.com/paed01/chronokinesis/issues"
@@ -44,17 +48,14 @@
     "fake now"
   ],
   "devDependencies": {
-    "@babel/core": "^7.12.3",
-    "@babel/preset-env": "^7.12.1",
-    "@rollup/plugin-babel": "^6.0.3",
-    "@rollup/plugin-commonjs": "^23.0.4",
+    "@rollup/plugin-commonjs": "^24.0.1",
     "c8": "^7.12.0",
     "chai": "^4.3.7",
     "eslint": "^8.29.0",
     "lodash.clonedeep": "^4.5.0",
     "markdown-toc": "^1.2.0",
     "mocha": "^10.1.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "rollup": "^3.7.0"
   }
 }

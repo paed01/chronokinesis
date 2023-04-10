@@ -1,7 +1,6 @@
-'use strict';
+import * as ck from '../index.js';
 
 const NativeDate = Date;
-const ck = require('..');
 
 describe('chronokinesis', () => {
   after(ck.reset);

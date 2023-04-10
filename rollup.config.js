@@ -1,28 +1,22 @@
-'use strict';
+import commonjs from '@rollup/plugin-commonjs';
 
-const babel = require('@rollup/plugin-babel');
-const commonjs = require('@rollup/plugin-commonjs');
-
-module.exports = {
+export default {
   input: './index.js',
   plugins: [
     commonjs({
-      sourceMap: false
+      sourceMap: false,
     }),
-    babel({ babelHelpers: 'bundled' })
   ],
   output: [
     {
-      name: 'chronokinesis',
-      file: 'dist/chronokinesis.js',
       exports: 'named',
-      format: 'iife',
+      file: 'dist/index.cjs',
+      format: 'cjs',
     },
     {
+      file: 'dist/chronokinesis.cjs',
       name: 'chronokinesis',
-      file: 'dist/index.es.js',
-      exports: 'named',
-      format: 'es',
-    }
-  ]
+      format: 'umd',
+    },
+  ],
 };

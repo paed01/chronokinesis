@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Inspired by Time keeper - EEasy testing of time-dependent code.
  *
@@ -45,7 +47,7 @@ FakeDate.now = function() {
   return time();
 };
 
-export function freeze(...args) {
+function freeze(...args) {
   useFakeDate();
   freezedAt = instantiate(Date, args);
   if (isNaN(freezedAt)) {
@@ -55,11 +57,11 @@ export function freeze(...args) {
   return freezedAt;
 }
 
-export function defrost() {
+function defrost() {
   freezedAt = null;
 }
 
-export function travel(...args) {
+function travel(...args) {
   useFakeDate();
   const travelToDate = instantiate(Date, args);
   if (isNaN(travelToDate)) {
@@ -77,7 +79,7 @@ export function travel(...args) {
   return travelToDate;
 }
 
-export function reset() {
+function reset() {
   useNativeDate();
   freezedAt = null;
   started = null;
@@ -85,11 +87,11 @@ export function reset() {
   iana = null;
 }
 
-export function isKeepingTime() {
+function isKeepingTime() {
   return Date === FakeDate;
 }
 
-export function timezone(timeZone) {
+function timezone(timeZone) {
   const options = {
     year: 'numeric',
     month: 'numeric',
@@ -185,3 +187,10 @@ function toUTC(formatter, dt) {
 
   return NativeDate.UTC(year, month, day, hour, minute, second, dt.getMilliseconds());
 }
+
+exports.defrost = defrost;
+exports.freeze = freeze;
+exports.isKeepingTime = isKeepingTime;
+exports.reset = reset;
+exports.timezone = timezone;
+exports.travel = travel;
