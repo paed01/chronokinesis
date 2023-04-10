@@ -1,6 +1,6 @@
 {
   "name": "chronokinesis",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Module for testing time-dependent code",
   "author": {
     "name": "Pål Edman",
@@ -9,10 +9,14 @@
   "license": "MIT",
   "type": "module",
   "module": "index.js",
-  "main": "dist/main.cjs",
+  "main": "dist/index.cjs",
   "browser": "dist/chronokinesis.cjs",
   "jsnext:main": "index.js",
   "sideEffects": true,
+  "exports": {
+    "import": "./index.js",
+    "require": "./dist/index.cjs"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/paed01/chronokinesis"
