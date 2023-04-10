@@ -1,6 +1,6 @@
 chronokinesis
 =============
-[![Build Status](https://app.travis-ci.com/paed01/chronokinesis.svg?branch=master)](https://app.travis-ci.com/paed01/chronokinesis) [![Coverage Status](https://coveralls.io/repos/github/paed01/chronokinesis/badge.svg?branch=master)](https://coveralls.io/github/paed01/chronokinesis?branch=master)
+[![Build](https://github.com/paed01/chronokinesis/actions/workflows/build.yaml/badge.svg)](https://github.com/paed01/chronokinesis/actions/workflows/build.yaml) [![Coverage Status](https://coveralls.io/repos/github/paed01/chronokinesis/badge.svg?branch=master)](https://coveralls.io/github/paed01/chronokinesis?branch=master)
 
 Mock time and date for traveling and freezing. Inspired and borrowed from [timekeeper](https://github.com/vesln/timekeeper).
 
