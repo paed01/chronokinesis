@@ -326,6 +326,48 @@ describe('chronokinesis', () => {
       expect(new Date().getTimezoneOffset()).to.equal(-60);
     });
   });
+
+  describe('#isKeepingTime', () => {
+    beforeEach(ck.reset);
+
+    it('returns true if froozen', () => {
+      const fakeTz = ck.timezone('Asia/Shanghai');
+      fakeTz.freeze();
+      expect(fakeTz.isKeepingTime()).to.be.true;
+      expect(ck.isKeepingTime()).to.be.true;
+    });
+
+    it('returns true if travleing', () => {
+      const fakeTz = ck.timezone('Asia/Shanghai');
+      fakeTz.travel();
+      expect(fakeTz.isKeepingTime()).to.be.true;
+      expect(ck.isKeepingTime()).to.be.true;
+    });
+
+    it('returns false if reset after traveling', () => {
+      const fakeTz = ck.timezone('Asia/Shanghai');
+      fakeTz.travel();
+      expect(fakeTz.isKeepingTime()).to.be.true;
+      expect(ck.isKeepingTime()).to.be.true;
+
+      fakeTz.reset();
+
+      expect(fakeTz.isKeepingTime()).to.be.false;
+      expect(ck.isKeepingTime()).to.be.false;
+    });
+  });
+
+  describe('new TimezoneTraveling(timeZone)', () => {
+    it('returns the expected interface', () => {
+      const cktz = new ck.TimeZoneTraveller('Europe/Stockholm');
+      expect(cktz.timeZone).to.equal('Europe/Stockholm');
+      expect(cktz.freeze).to.be.a('function');
+      expect(cktz.defrost).to.be.a('function');
+      expect(cktz.travel).to.be.a('function');
+      expect(cktz.isKeepingTime).to.be.a('function');
+      expect(cktz.getTime).to.be.a('function');
+    });
+  });
 });
 
 function diffHrs(dt, faked) {

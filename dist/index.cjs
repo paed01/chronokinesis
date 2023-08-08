@@ -29,7 +29,7 @@ function FakeDate(...args) {
       const curr = nativeGetTimezoneOffset.call(this);
       if (!iana) return curr;
 
-      const tz = timezone(iana).getTime(this);
+      const tz = new TimeZoneTraveller(iana).getTime(this);
       return Math.round((tz - this.getTime()) / 60000) + curr;
     },
   });
@@ -91,7 +91,8 @@ function isKeepingTime() {
   return Date === FakeDate;
 }
 
-function timezone(timeZone) {
+function TimeZoneTraveller(timeZone) {
+  this.timeZone = timeZone;
   const options = {
     year: 'numeric',
     month: 'numeric',
@@ -101,44 +102,41 @@ function timezone(timeZone) {
     second: 'numeric',
     hour12: false,
   };
-
-  const current = Intl.DateTimeFormat('UTC', options);
-  const formatter = Intl.DateTimeFormat('UTC', {
-    timeZone: timeZone,
+  this.localFormatter = Intl.DateTimeFormat('UTC', options);
+  this.timeZoneFormatter = Intl.DateTimeFormat('UTC', {
+    timeZone,
     ...options,
   });
+}
 
-  return {
-    timeZone,
-    defrost,
-    reset,
-    isKeepingTime,
-    getTime,
-    freeze: freezeInTimezone,
-    travel: travelInTimezone,
-  };
+TimeZoneTraveller.prototype.defrost = defrost;
+TimeZoneTraveller.prototype.reset = reset;
+TimeZoneTraveller.prototype.isKeepingTime = isKeepingTime;
 
-  function freezeInTimezone(...args) {
-    if (!args.length && iana === timeZone) return freeze();
-    iana = timeZone;
-    return freeze(getTime(...args));
-  }
+TimeZoneTraveller.prototype.getTime = function timeZoneGetTime(...args) {
+  const realDate = instantiate(Date, args);
+  const tz = new NativeDate(toUTC(this.timeZoneFormatter, realDate));
 
-  function travelInTimezone(...args) {
-    if (!args.length && iana === timeZone) return travel();
-    iana = timeZone;
-    return travel(getTime(...args));
-  }
+  if (!args.length) return tz.getTime();
+  const currentTz = new NativeDate(toUTC(this.localFormatter, realDate));
 
-  function getTime(...args) {
-    const realDate = instantiate(Date, args);
-    const tz = new NativeDate(toUTC(formatter, realDate));
+  return realDate.getTime() + currentTz.getTime() - tz.getTime();
+};
 
-    if (!args.length) return tz.getTime();
-    const currentTz = new NativeDate(toUTC(current, realDate));
+TimeZoneTraveller.prototype.freeze = function freezeInTimezone(...args) {
+  if (!args.length && iana === this.timeZone) return freeze();
+  iana = this.timeZone;
+  return freeze(this.getTime(...args));
+};
 
-    return realDate.getTime() + currentTz.getTime() - tz.getTime();
-  }
+TimeZoneTraveller.prototype.travel = function timeZoneTravel(...args) {
+  if (!args.length && iana === this.timeZone) return travel();
+  iana = this.timeZone;
+  return travel(this.getTime(...args));
+};
+
+function timezone(timeZone) {
+  return new TimeZoneTraveller(timeZone);
 }
 
 function useFakeDate() {
@@ -188,6 +186,7 @@ function toUTC(formatter, dt) {
   return NativeDate.UTC(year, month, day, hour, minute, second, dt.getMilliseconds());
 }
 
+exports.TimeZoneTraveller = TimeZoneTraveller;
 exports.defrost = defrost;
 exports.freeze = freeze;
 exports.isKeepingTime = isKeepingTime;

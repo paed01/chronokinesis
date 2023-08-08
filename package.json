@@ -1,6 +1,6 @@
 {
   "name": "chronokinesis",
-  "version": "5.0.2",
+  "version": "5.1.0",
   "description": "Module for testing time-dependent code",
   "author": {
     "name": "Pål Edman",
@@ -22,6 +22,7 @@
     "test": "mocha",
     "lint": "eslint . --cache",
     "test:lcov": "c8 -r lcov -r text mocha && npm run lint",
+    "cov:html": "c8 mocha -R dot && c8 report --reporter html",
     "posttest": "npm run lint && npm run dist",
     "prepack": "npm run dist",
     "dist": "npm run toc && rollup -c"
@@ -48,14 +49,14 @@
     "fake now"
   ],
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^24.0.1",
-    "c8": "^7.12.0",
+    "@rollup/plugin-commonjs": "^25.0.3",
+    "c8": "^8.0.1",
     "chai": "^4.3.7",
-    "eslint": "^8.29.0",
+    "eslint": "^8.46.0",
     "lodash.clonedeep": "^4.5.0",
     "markdown-toc": "^1.2.0",
     "mocha": "^10.1.0",
     "moment": "^2.29.4",
-    "rollup": "^3.7.0"
+    "rollup": "^3.27.2"
   }
 }

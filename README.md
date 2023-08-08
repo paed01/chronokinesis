@@ -14,10 +14,11 @@ Mock time and date for traveling and freezing. Inspired and borrowed from [timek
   - [`reset()`](#reset)
   - [`isKeepingTime()`](#iskeepingtime)
   - [`timezone(timeZone)`](#timezonetimezone)
-    - [timezone `freeze([...args])`](#timezone-freezeargs)
-    - [timezone `travel([...args])`](#timezone-travelargs)
-    - [timezone `reset()`](#timezone-reset)
-    - [timezone `defrost()`](#timezone-defrost)
+  - [`new TimeZoneTraveller(timeZone)`](#new-timezonetravellertimezone)
+    - [`timezone.freeze([...args])`](#timezonefreezeargs)
+    - [`timezone.travel([...args])`](#timezonetravelargs)
+    - [`timezone.reset()`](#timezonereset)
+    - [`timezone.defrost()`](#timezonedefrost)
 - [Distributions](#distributions)
   - [Nodejs require](#nodejs-require)
   - [Browser (UMD)](#browser-umd)
@@ -169,7 +170,7 @@ console.log(ck.isKeepingTime() ? 'Is' : 'Not', 'keeping time');
 
 ## `timezone(timeZone)`
 
-Freeze and travel in different time zones.
+Freeze and travel in different time zones. Returns [`TimeZoneTraveller` api](#new-timezonetravellertimezone)
 
 ```javascript
 import * as ck from 'chronokinesis';
@@ -179,19 +180,31 @@ const tz = ck.timezone('Asia/Shanghai');
 tz.freeze();
 ```
 
-### timezone `freeze([...args])`
+## `new TimeZoneTraveller(timeZone)`
+
+Time zone traveller api.
+
+```javascript
+import {TimeZoneTraveller} from 'chronokinesis';
+
+const timezone = new TimeZoneTraveller('Asia/Shanghai');
+
+timezone.freeze();
+```
+
+### `timezone.freeze([...args])`
 
 Freeze at the specific timezone.
 
-### timezone `travel([...args])`
+### `timezone.travel([...args])`
 
 Start traveling in the specific timezone.
 
-### timezone `reset()`
+### `timezone.reset()`
 
 Same as [#reset](#reset)
 
-### timezone `defrost()`
+### `timezone.defrost()`
 
 Same as [#defrost](#defrost)
 
