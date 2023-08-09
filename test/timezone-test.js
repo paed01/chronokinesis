@@ -18,11 +18,37 @@ describe('chronokinesis', () => {
     it('throws if timezone is unresolved', () => {
       expect(() => ck.timezone('Moon/Crater')).to.throw(RangeError, /Moon\/Crater/i);
     });
+
+    it('immediately starts travelling in time zone', () => {
+      ck.timezone('Europe/Helsinki');
+      expect(ck.isKeepingTime()).to.be.true;
+      const fdate = new Date();
+
+      ck.timezone('Europe/Stockholm');
+      expect(ck.isKeepingTime()).to.be.true;
+      const sdate = new Date();
+
+      expect(sdate.getHours() - fdate.getHours()).to.be.above(0);
+    });
+
+    it('arguments are passed to time zone travel function', () => {
+      const utc = Date.UTC(2021, 7, 26, 18, 0);
+
+      ck.timezone('Europe/Helsinki', 2021, 7, 26, 18, 0);
+      const fdate = new Date();
+
+      ck.timezone('Europe/Stockholm', 2021, 7, 26, 18, 0);
+      const sdate = new Date();
+
+      expect(diffHrs(utc, fdate), 'Finland').to.equal(-3);
+      expect(diffHrs(utc, sdate), 'Sweden').to.equal(-2);
+
+      expect(diffHrs(fdate, sdate)).to.equal(1);
+    });
   });
 
   describe('#freeze in timezone', () => {
     beforeEach(ck.reset);
-
     it('with arguments freezes at specified time in timezone', () => {
       const utc = Date.UTC(2021, 7, 26, 15, 0);
 

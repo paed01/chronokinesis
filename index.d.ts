@@ -31,7 +31,7 @@ export class TimeZoneTraveller {
    * @param timeZone IANA time zone
    */
   constructor(timeZone: string);
-  /** Time zone */
+  /** IANA time zone */
   readonly timeZone: string;
   defrost: typeof defrost;
   reset: typeof reset;
@@ -47,7 +47,8 @@ export class TimeZoneTraveller {
 }
 
 /**
- * Freeze and travel in different time zones.
- * @param timeZone string IANA time zone
+ * Travel to time zone.
+ * @param timeZone IANA time zone
+ * @param args Optional travel to date arguments
  */
-export function timezone(timeZone: string): TimeZoneTraveller;
+export function timezone(timeZone: string, ...args: any[]): TimeZoneTraveller;

@@ -1,6 +1,6 @@
 {
   "name": "chronokinesis",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "description": "Module for testing time-dependent code",
   "author": {
     "name": "Pål Edman",

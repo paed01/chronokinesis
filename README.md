@@ -13,7 +13,7 @@ Mock time and date for traveling and freezing. Inspired and borrowed from [timek
   - [`defrost()`](#defrost)
   - [`reset()`](#reset)
   - [`isKeepingTime()`](#iskeepingtime)
-  - [`timezone(timeZone)`](#timezonetimezone)
+  - [`timezone(timeZone[, ...args])`](#timezonetimezone-args)
   - [`new TimeZoneTraveller(timeZone)`](#new-timezonetravellertimezone)
     - [`timezone.freeze([...args])`](#timezonefreezeargs)
     - [`timezone.travel([...args])`](#timezonetravelargs)
@@ -168,14 +168,22 @@ ck.travel(1893448800000);
 console.log(ck.isKeepingTime() ? 'Is' : 'Not', 'keeping time');
 ```
 
-## `timezone(timeZone)`
+## `timezone(timeZone[, ...args])`
 
-Freeze and travel in different time zones. Returns [`TimeZoneTraveller` api](#new-timezonetravellertimezone)
+Travel to time zone.
+
+- `timeZone`: IANA time zone string
+- `...args`: Optional travel to date arguments
+
+Returns [`TimeZoneTraveller` api](#new-timezonetravellertimezone)
 
 ```javascript
 import * as ck from 'chronokinesis';
 
 const tz = ck.timezone('Asia/Shanghai');
+
+// Now in Shanghai
+console.log(new Date())
 
 tz.freeze();
 ```

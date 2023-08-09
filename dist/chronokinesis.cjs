@@ -46,7 +46,7 @@
 
   FakeDate.prototype = NativeDate.prototype;
 
-  FakeDate.now = function() {
+  FakeDate.now = function fakeNow() {
     if (freezedAt) return freezedAt.getTime();
     return time();
   };
@@ -139,8 +139,10 @@
     return travel(this.getTime(...args));
   };
 
-  function timezone(timeZone) {
-    return new TimeZoneTraveller(timeZone);
+  function timezone(timeZone, ...args) {
+    const tz = new TimeZoneTraveller(timeZone);
+    tz.travel(...args);
+    return tz;
   }
 
   function useFakeDate() {
