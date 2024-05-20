@@ -140,11 +140,11 @@ export function timezone(timeZone, ...args) {
 }
 
 function useFakeDate() {
-  Date = FakeDate; // eslint-disable-line no-global-assign
+  Date = FakeDate;
 }
 
 function useNativeDate() {
-  Date = NativeDate; // eslint-disable-line no-global-assign
+  Date = NativeDate;
 }
 
 function time() {
@@ -160,7 +160,7 @@ function instantiate(type, args) {
 function toUTC(formatter, dt) {
   let year, month, day, hour, minute, second;
 
-  for (const {type, value} of formatter.formatToParts(dt)) {
+  for (const { type, value } of formatter.formatToParts(dt)) {
     switch (type) {
       case 'year':
         year = parseInt(value);

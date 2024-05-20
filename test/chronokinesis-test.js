@@ -17,9 +17,7 @@ describe('chronokinesis', () => {
       const now = new Date();
       ck.freeze(now);
       return postpone(() => {
-
-        expect((new Date()).getTime()).to.equal(now.getTime());
-
+        expect(new Date().getTime()).to.equal(now.getTime());
       }, 10);
     });
 
@@ -32,7 +30,7 @@ describe('chronokinesis', () => {
       ck.freeze(again);
 
       return postpone(() => {
-        expect((new Date()).getTime()).to.equal(again.getTime());
+        expect(new Date().getTime()).to.equal(again.getTime());
       }, 10);
     });
 
@@ -46,7 +44,7 @@ describe('chronokinesis', () => {
         dateObj.setUTCHours(hour);
 
         expect(dateObj.getUTCHours()).to.equal(hour);
-        expect((new Date()).getTime()).to.equal(now.getTime());
+        expect(new Date().getTime()).to.equal(now.getTime());
       }, 10);
     });
 
@@ -56,7 +54,7 @@ describe('chronokinesis', () => {
       const dateObj = new Date();
 
       return postpone(() => {
-        expect((new Date()).getTime()).to.equal(dateObj.getTime());
+        expect(new Date().getTime()).to.equal(dateObj.getTime());
       }, 10);
     });
 
@@ -74,7 +72,9 @@ describe('chronokinesis', () => {
 
       return postpone(() => {
         const tt = traveledTo.getTime();
-        expect(freeze.getTime()).to.be.above(tt - 1).and.below(tt + 1000);
+        expect(freeze.getTime())
+          .to.be.above(tt - 1)
+          .and.below(tt + 1000);
       }, 10);
     });
 
@@ -93,7 +93,9 @@ describe('chronokinesis', () => {
 
       return postpone(() => {
         const tt = traveled.getTime();
-        expect(freeze.getTime()).to.be.above(tt - 1).and.below(tt + 1000);
+        expect(freeze.getTime())
+          .to.be.above(tt - 1)
+          .and.below(tt + 1000);
       }, 10);
     });
 
@@ -116,7 +118,7 @@ describe('chronokinesis', () => {
       ck.defrost();
 
       return postpone(() => {
-        expect((new Date()).getTime()).to.be.above(freeze.getTime());
+        expect(new Date().getTime()).to.be.above(freeze.getTime());
         expect(ck.isKeepingTime()).to.be.true;
       }, 10);
     });
@@ -128,8 +130,8 @@ describe('chronokinesis', () => {
       ck.defrost();
 
       return postpone(() => {
-        expect((new Date()).getTime()).to.be.above(traveled - 1);
-        expect((new Date()).getTime()).to.be.below(traveled + 1000);
+        expect(new Date().getTime()).to.be.above(traveled - 1);
+        expect(new Date().getTime()).to.be.below(traveled + 1000);
       }, 10);
     });
   });
@@ -148,7 +150,7 @@ describe('chronokinesis', () => {
 
       ck.travel(dateObj);
 
-      expect((new Date()).getUTCFullYear()).to.be.above(now.getUTCFullYear());
+      expect(new Date().getUTCFullYear()).to.be.above(now.getUTCFullYear());
     });
 
     it('and backwards', () => {
@@ -158,7 +160,7 @@ describe('chronokinesis', () => {
 
       ck.travel(dateObj);
 
-      expect((new Date()).getUTCFullYear()).to.be.below(now.getUTCFullYear());
+      expect(new Date().getUTCFullYear()).to.be.below(now.getUTCFullYear());
     });
 
     it('with arguments', () => {
@@ -168,17 +170,17 @@ describe('chronokinesis', () => {
 
       ck.travel('1970-01-01T01:01:01Z');
 
-      expect((new Date()).getUTCFullYear()).to.be.equal(1970);
+      expect(new Date().getUTCFullYear()).to.be.equal(1970);
 
       ck.travel(1980, 11, 24);
 
-      expect((new Date()).getUTCFullYear()).to.be.equal(1980);
+      expect(new Date().getUTCFullYear()).to.be.equal(1980);
     });
 
     it('without arguments does just about nothing', () => {
       ck.travel();
 
-      expect((new Date()).getUTCFullYear()).to.be.equal(now.getUTCFullYear());
+      expect(new Date().getUTCFullYear()).to.be.equal(now.getUTCFullYear());
     });
 
     it('Date.now has traveled', () => {
@@ -198,7 +200,7 @@ describe('chronokinesis', () => {
       const traveledTo = ck.travel(1982, 5, 25, 10, 10, 10, 10);
 
       return postpone(() => {
-        expect((new Date()).getTime()).to.equal(traveledTo.getTime());
+        expect(new Date().getTime()).to.equal(traveledTo.getTime());
       }, 10);
     });
 
@@ -258,9 +260,11 @@ describe('chronokinesis', () => {
     });
 
     it('after reset in combination with lodash cloneDeep returns native Date', () => {
-      const content = _.assign(_.cloneDeep({
-        d: new Date(),
-      }));
+      const content = _.assign(
+        _.cloneDeep({
+          d: new Date(),
+        }),
+      );
       expect(content.d).to.not.be.a('function');
       expect(content.d).to.be.instanceOf(NativeDate);
     });
@@ -272,7 +276,7 @@ describe('chronokinesis', () => {
 
       const freeze = ck.freeze(dateObj);
       ck.reset();
-      expect((new Date()).getUTCFullYear()).to.be.below(freeze.getUTCFullYear());
+      expect(new Date().getUTCFullYear()).to.be.below(freeze.getUTCFullYear());
       expect(Date.now()).to.be.below(freeze.getTime());
     });
 
@@ -283,7 +287,7 @@ describe('chronokinesis', () => {
 
       ck.travel(dateObj);
       ck.reset();
-      expect((new Date()).getUTCFullYear()).to.be.below(dateObj.getUTCFullYear());
+      expect(new Date().getUTCFullYear()).to.be.below(dateObj.getUTCFullYear());
       expect(Date.now()).to.be.below(dateObj.getTime());
     });
   });
@@ -463,7 +467,6 @@ describe('chronokinesis', () => {
         let count = 2;
 
         return new Promise((resolve) => {
-
           const ptr = setInterval(atInterval, 10);
           function atInterval() {
             if (count === 0) {
@@ -502,7 +505,7 @@ describe('chronokinesis', () => {
 
       ck.travel(momentDate);
 
-      expect((new Date()).getTime()).to.be.equal(momentDate.valueOf());
+      expect(new Date().getTime()).to.be.equal(momentDate.valueOf());
     });
 
     it('freezes when used as argument', () => {
@@ -511,7 +514,7 @@ describe('chronokinesis', () => {
       ck.freeze(momentDate);
 
       return postpone(() => {
-        expect((new Date()).getTime()).to.equal(momentDate.valueOf());
+        expect(new Date().getTime()).to.equal(momentDate.valueOf());
       }, 10);
     });
   });

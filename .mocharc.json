@@ -1,0 +1,5 @@
+{
+  "reporter": "spec",
+  "recursive": true,
+  "require": ["chai/register-expect.js"]
+}

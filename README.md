@@ -1,5 +1,5 @@
-chronokinesis
-=============
+# chronokinesis
+
 [![Build](https://github.com/paed01/chronokinesis/actions/workflows/build.yaml/badge.svg)](https://github.com/paed01/chronokinesis/actions/workflows/build.yaml) [![Coverage Status](https://coveralls.io/repos/github/paed01/chronokinesis/badge.svg?branch=master)](https://coveralls.io/github/paed01/chronokinesis?branch=master)
 
 Mock time and date for traveling and freezing. Inspired and borrowed from [timekeeper](https://github.com/vesln/timekeeper).
@@ -92,7 +92,7 @@ let date = new Date(2018, 0, 31);
 
 ck.travel(date);
 
-setTimeout(function() {
+setTimeout(function () {
   console.log(new Date());
   ck.reset();
 }, 1500);
@@ -110,7 +110,7 @@ ck.freeze(date);
 
 ck.travel(moment().add(1, 'year'));
 
-setTimeout(function() {
+setTimeout(function () {
   console.log(`Still frozen but one year ahead ${new Date()}`);
 
   ck.reset();
@@ -148,12 +148,12 @@ Resets Date to current glory.
 import * as ck from 'chronokinesis';
 
 ck.freeze(2060, 0, 1);
-console.log(`end of time is reached at ${new Date()} according to Newton`)
+console.log(`end of time is reached at ${new Date()} according to Newton`);
 
 ck.reset();
 
 // Today
-console.log(new Date())
+console.log(new Date());
 ```
 
 ## `isKeepingTime()`
@@ -183,7 +183,7 @@ import * as ck from 'chronokinesis';
 const tz = ck.timezone('Asia/Shanghai');
 
 // Now in Shanghai
-console.log(new Date())
+console.log(new Date());
 
 tz.freeze();
 ```
@@ -193,7 +193,7 @@ tz.freeze();
 Time zone traveller api.
 
 ```javascript
-import {TimeZoneTraveller} from 'chronokinesis';
+import { TimeZoneTraveller } from 'chronokinesis';
 
 const timezone = new TimeZoneTraveller('Asia/Shanghai');
 
