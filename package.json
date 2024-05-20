@@ -15,7 +15,12 @@
   "sideEffects": true,
   "repository": {
     "type": "git",
-    "url": "git://github.com/paed01/chronokinesis"
+    "url": "git://github.com/paed01/chronokinesis.git"
+  },
+  "exports": {
+    "import": "./index.js",
+    "require": "./dist/index.cjs",
+    "types": "./index.d.ts"
   },
   "scripts": {
     "toc": "node generate-api-toc.cjs",
