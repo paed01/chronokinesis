@@ -43,6 +43,18 @@ setTimeout(() => {
 }, 2000);
 ```
 
+With arguments:
+
+```javascript
+import * as ck from 'chronokinesis';
+import assert from 'node:assert';
+
+ck.freeze(1980, 0, 1);
+
+assert.equal(true, ck.isKeepingTime());
+assert.deepEqual(new Date(), new Date(1980, 0, 1));
+```
+
 or use with [`moment`](http://momentjs.com):
 
 ```javascript
@@ -180,10 +192,11 @@ Returns [`TimeZoneTraveller` api](#new-timezonetravellertimezone)
 ```javascript
 import * as ck from 'chronokinesis';
 
+ck.reset();
+
 const tz = ck.timezone('Asia/Shanghai');
 
-// Now in Shanghai
-console.log(new Date());
+console.log('Now in Shanghai', new Date());
 
 tz.freeze();
 ```

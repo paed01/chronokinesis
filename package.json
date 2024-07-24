@@ -28,7 +28,7 @@
     "lint": "eslint . --cache && prettier . --check --cache",
     "test:lcov": "c8 -r lcov -r text mocha && npm run lint",
     "cov:html": "c8 mocha -R dot && c8 report --reporter html",
-    "posttest": "npm run lint && npm run dist && texample",
+    "posttest": "npm run lint && npm run dist && texample -g",
     "prepack": "npm run dist",
     "dist": "npm run toc && rollup -c"
   },
@@ -54,8 +54,8 @@
     "fake now"
   ],
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "c8": "^9.1.0",
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "c8": "^10.1.2",
     "chai": "^5.1.0",
     "eslint": "^9.3.0",
     "lodash.clonedeep": "^4.5.0",
@@ -64,6 +64,6 @@
     "moment": "^2.30.1",
     "prettier": "^3.2.5",
     "rollup": "^4.12.1",
-    "texample": "^0.0.5"
+    "texample": "^0.0.6"
   }
 }
