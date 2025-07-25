@@ -1,6 +1,8 @@
-import moment from 'moment';
 import cloneDeep from 'lodash.clonedeep';
-import * as ck from '../index.js';
+import moment from 'moment';
+import { DateTime } from 'luxon';
+
+import * as ck from 'chronokinesis';
 
 const _ = {
   cloneDeep,
@@ -295,6 +297,10 @@ describe('chronokinesis', () => {
   describe('FakeDate', () => {
     afterEach(ck.reset);
 
+    it('is exported', () => {
+      expect(ck.FakeDate).to.be.a('function');
+    });
+
     describe('#ctor', () => {
       it('without arguments returns date', () => {
         ck.freeze();
@@ -480,6 +486,42 @@ describe('chronokinesis', () => {
           }
         });
       });
+    });
+  });
+
+  describe('luxon', () => {
+    afterEach(ck.reset);
+
+    it('frozen format has expected behavior', () => {
+      ck.freeze(1980, 0, 1);
+      return postpone(() => {
+        expect(DateTime.now().toISODate()).to.equal('1980-01-01');
+      }, 10);
+    });
+
+    it('traveled format has expected behavior', () => {
+      ck.travel(1981, 0, 1);
+      return postpone(() => {
+        expect(DateTime.now().toISODate()).to.equal('1981-01-01');
+      }, 10);
+    });
+
+    it('travels when used as argument', () => {
+      const luxonDate = DateTime.now().plus({ day: 7 });
+
+      ck.travel(luxonDate);
+
+      expect(new Date().getTime()).to.be.equal(luxonDate.toMillis());
+    });
+
+    it('freezes when used as argument', () => {
+      const luxonDate = DateTime.now().minus({ day: 1 });
+
+      ck.freeze(luxonDate);
+
+      return postpone(() => {
+        expect(new Date().getTime()).to.equal(luxonDate.toMillis());
+      }, 10);
     });
   });
 

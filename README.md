@@ -53,6 +53,23 @@ ck.freeze(1980, 0, 1);
 
 assert.equal(true, ck.isKeepingTime());
 assert.deepEqual(new Date(), new Date(1980, 0, 1));
+
+ck.reset();
+```
+
+or use with [`luxon`](https://moment.github.io/luxon):
+
+```javascript
+import { DateTime } from 'luxon';
+import * as ck from 'chronokinesis';
+
+ck.travel(DateTime.now().plus({ year: 1 }).toMillis());
+
+setTimeout(() => {
+  console.log('Traveled with Luxon DateTime one year and some', new Date());
+
+  ck.reset();
+}, 2000);
 ```
 
 or use with [`moment`](http://momentjs.com):
@@ -64,8 +81,7 @@ import * as ck from 'chronokinesis';
 ck.travel(moment().add(1, 'year'));
 
 setTimeout(() => {
-  // Date traveled one year and some
-  console.log(new Date());
+  console.log('Traveled with Moment Date one year and some', new Date());
 
   ck.reset();
 }, 2000);
@@ -178,6 +194,8 @@ import * as ck from 'chronokinesis';
 console.log(ck.isKeepingTime() ? 'Is' : 'Not', 'keeping time');
 ck.travel(1893448800000);
 console.log(ck.isKeepingTime() ? 'Is' : 'Not', 'keeping time');
+
+ck.reset();
 ```
 
 ## `timezone(timeZone[, ...args])`
@@ -199,6 +217,8 @@ const tz = ck.timezone('Asia/Shanghai');
 console.log('Now in Shanghai', new Date());
 
 tz.freeze();
+
+ck.reset();
 ```
 
 ## `new TimeZoneTraveller(timeZone)`
@@ -206,11 +226,13 @@ tz.freeze();
 Time zone traveller api.
 
 ```javascript
-import { TimeZoneTraveller } from 'chronokinesis';
+import { TimeZoneTraveller, reset } from 'chronokinesis';
 
 const timezone = new TimeZoneTraveller('Asia/Shanghai');
 
 timezone.freeze();
+
+reset();
 ```
 
 ### `timezone.freeze([...args])`

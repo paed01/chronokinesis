@@ -4,8 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [7.0.0] - 2025-07-25
+
+- attempt to mitigate issue #4 - multiple module load
+- export FakeDate
 - use prettier for formatting rules
 - use texample to run through README examples
+- test faking dates with luxon
 
 ## [6.0.0] - 2023-08-09
 

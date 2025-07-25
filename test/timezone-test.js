@@ -1,8 +1,8 @@
-import * as ck from '../index.js';
+import * as ck from 'chronokinesis';
 
 const NativeDate = Date;
 
-describe('chronokinesis', () => {
+describe('chronokinesis timezone', () => {
   after(ck.reset);
 
   describe('#timezone', () => {

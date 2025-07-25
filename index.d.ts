@@ -23,6 +23,11 @@ export function reset(): void;
 export function isKeepingTime(): boolean;
 
 /**
+ * Fake date
+ */
+export class FakeDate extends Date {}
+
+/**
  * Timezone traveling
  */
 export class TimeZoneTraveller {

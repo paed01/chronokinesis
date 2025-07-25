@@ -10,7 +10,9 @@
    * Veselin Todorov <hi@vesln.com>
    * MIT License.
    */
-  const NativeDate = Date;
+  const kNativeDate = Symbol.for('chronokinesis native date');
+
+  const NativeDate = Date[kNativeDate] || Date;
   const nativeGetTimezoneOffset = NativeDate.prototype.getTimezoneOffset;
 
   let freezedAt = null;
@@ -40,6 +42,8 @@
 
     return dt;
   }
+
+  FakeDate[kNativeDate] = NativeDate;
 
   FakeDate.UTC = NativeDate.UTC;
   FakeDate.parse = NativeDate.parse;
@@ -150,7 +154,7 @@
   }
 
   function useNativeDate() {
-    Date = NativeDate;
+    Date = FakeDate[kNativeDate];
   }
 
   function time() {
@@ -192,6 +196,7 @@
     return NativeDate.UTC(year, month, day, hour, minute, second, dt.getMilliseconds());
   }
 
+  exports.FakeDate = FakeDate;
   exports.TimeZoneTraveller = TimeZoneTraveller;
   exports.defrost = defrost;
   exports.freeze = freeze;
