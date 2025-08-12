@@ -6,11 +6,17 @@ All notable changes to this project will be documented in this file.
 
 ## [7.0.0] - 2025-07-25
 
+### Breaking
+
+- when declaring "exports" field in package.json it takes prescedence over "main", thus breaking the exports default. Use `import * as ck from 'chronokinesis';`. A simple search & replace should fix this.
+
+### Fixes
+
 - attempt to mitigate issue #4 - multiple module load
 - export FakeDate
+- test faking dates with luxon
 - use prettier for formatting rules
 - use texample to run through README examples
-- test faking dates with luxon
 
 ## [6.0.0] - 2023-08-09
 
