@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [7.0.1] - 2025-11-13
+
+- proof of provenance release
+
 ## [7.0.0] - 2025-07-25
 
 ### Breaking

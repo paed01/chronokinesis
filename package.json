@@ -1,6 +1,6 @@
 {
   "name": "chronokinesis",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "description": "Module for testing time-dependent code",
   "author": {
     "name": "Pål Edman",
@@ -54,9 +54,9 @@
     "fake now"
   ],
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^28.0.2",
+    "@rollup/plugin-commonjs": "^29.0.0",
     "c8": "^10.1.2",
-    "chai": "^5.1.0",
+    "chai": "^6.2.0",
     "eslint": "^9.3.0",
     "lodash.clonedeep": "^4.5.0",
     "luxon": "^3.7.1",
