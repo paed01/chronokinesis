@@ -2,13 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## Unreleased
 
-## [7.0.1] - 2025-11-13
+## v8.0.0 - 2026-04-24
+
+### Breaking
+
+- mocks `process.hrtime([time])` and `process.hrtime.bigint()`
+- mocks `performance.now()`
+
+## v7.0.1 - 2025-11-13
 
 - proof of provenance release
 
-## [7.0.0] - 2025-07-25
+## v7.0.0 - 2025-07-25
 
 ### Breaking
 
@@ -22,18 +29,18 @@ All notable changes to this project will be documented in this file.
 - use prettier for formatting rules
 - use texample to run through README examples
 
-## [6.0.0] - 2023-08-09
+## v6.0.0 - 2023-08-09
 
 ### Breaking
 
 - timezone function calls travel by default #3
 - timezone function signature also takes travel arguments
 
-## [5.0.0] - 2023-04-10
+## v5.0.0 - 2023-04-10
 
 - export as module with dist for require and umd
 
-## [4.0.1] - 2022-12-09
+## v4.0.1 - 2022-12-09
 
 - replace lab with mocha and chai
 - default to node v14

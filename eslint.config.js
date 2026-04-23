@@ -70,11 +70,13 @@ export default [
     languageOptions: {
       parserOptions: {
         sourceType: 'module',
-        ecmaVersion: 2018,
+        ecmaVersion: 2022,
       },
       globals: {
         ...globals['shared-node-browser'],
         ...globals.es6,
+        process: 'readonly',
+        performance: 'readonly',
       },
     },
     rules: {
@@ -85,7 +87,7 @@ export default [
     files: ['test/**/*.js'],
     languageOptions: {
       parserOptions: {
-        ecmaVersion: 2020,
+        ecmaVersion: 2022,
       },
       globals: {
         ...globals.node,
