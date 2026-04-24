@@ -18,7 +18,7 @@ const nativePerformanceNow = nativePerformance && typeof nativePerformance.now =
 
 // Anchor native perf.now against native hrtime at module load so that later reads
 // can reconstruct real native perf.now even when process.hrtime has been swapped
-// (Node <24 wires performance.now to process.hrtime internally).
+// (Node <22 wires performance.now to process.hrtime internally).
 const perfAnchorMs = nativePerformanceNow ? nativePerformanceNow.call(nativePerformance) : 0;
 const hrtimeAnchorNs = nativeHrtimeBigint ? nativeHrtimeBigint.call(nativeProcess) : 0n;
 /* c8 ignore stop */
@@ -95,9 +95,8 @@ export function travel(...args) {
   }
 
   const prevMockedMs = currentMockedMs();
-  traveledTo = travelToDate.getTime();
-  started = NativeDate.now();
-  const deltaMs = traveledTo - prevMockedMs;
+  const targetMs = travelToDate.getTime();
+  const deltaMs = targetMs - prevMockedMs;
   if (nativeHrtimeBigint) hrtimeOffset += BigInt(deltaMs) * 1_000_000n;
   if (nativePerformanceNow) performanceNowOffset += deltaMs;
 
@@ -106,6 +105,9 @@ export function travel(...args) {
     if (nativeHrtimeBigint) freezedHrtimeNs = nativeHrtimeBigint.call(nativeProcess) + hrtimeOffset;
     if (nativePerformanceNow) freezedPerformanceNow = nativePerformanceNowFromHrtime() + performanceNowOffset;
   }
+
+  traveledTo = targetMs;
+  started = NativeDate.now();
 
   return travelToDate;
 }
@@ -203,10 +205,6 @@ function currentMockedMs() {
 }
 
 function nativePerformanceNowFromHrtime() {
-  // Older Node (<24) wires performance.now() to process.hrtime internally, so
-  // calling nativePerformanceNow directly would pick up our hrtime swap and
-  // double-shift. Rebuild perf.now from the preserved hrtime.bigint reference,
-  // anchored to a native perf.now reading captured at module load.
   if (nativeHrtimeBigint) {
     const elapsedNs = nativeHrtimeBigint.call(nativeProcess) - hrtimeAnchorNs;
     return perfAnchorMs + Number(elapsedNs) / 1_000_000;

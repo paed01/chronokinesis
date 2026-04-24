@@ -97,9 +97,8 @@ function travel(...args) {
   }
 
   const prevMockedMs = currentMockedMs();
-  traveledTo = travelToDate.getTime();
-  started = NativeDate.now();
-  const deltaMs = traveledTo - prevMockedMs;
+  const targetMs = travelToDate.getTime();
+  const deltaMs = targetMs - prevMockedMs;
   if (nativeHrtimeBigint) hrtimeOffset += BigInt(deltaMs) * 1_000_000n;
   if (nativePerformanceNow) performanceNowOffset += deltaMs;
 
@@ -108,6 +107,12 @@ function travel(...args) {
     if (nativeHrtimeBigint) freezedHrtimeNs = nativeHrtimeBigint.call(nativeProcess) + hrtimeOffset;
     if (nativePerformanceNow) freezedPerformanceNow = nativePerformanceNowFromHrtime() + performanceNowOffset;
   }
+
+  // Capture the wall-clock anchor as late as possible so the first new Date()
+  // after travel() still matches the target on slow runners (fewer ms boundaries
+  // crossed between this line and the caller's next read).
+  traveledTo = targetMs;
+  started = NativeDate.now();
 
   return travelToDate;
 }

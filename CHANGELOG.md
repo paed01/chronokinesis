@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 - mocks `process.hrtime([time])` and `process.hrtime.bigint()`
 - mocks `performance.now()`
 
+### Fixes
+
+- fix bug in travel that resulted in consumed milliseconds before returning
+
 ## v7.0.1 - 2025-11-13
 
 - proof of provenance release
