@@ -9,11 +9,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run test:lcov` — c8 coverage + mocha + lint. Mirrors CI.
 - `npm run cov:html` — HTML coverage report to `coverage/`.
 - `npm run dist` — regenerate README TOC and produce `dist/index.cjs` (CJS) + `dist/chronokinesis.cjs` (UMD, global `chronokinesis`) via Rollup.
-- `npm run toc` — regenerate README TOC in place (`generate-api-toc.cjs`).
+- `npm run toc` — regenerate README TOC in place (`@0dep/toc`).
 - Run a single test: `npx mocha test/chronokinesis-test.js --grep "stops time"`.
 - `posttest` runs lint, dist, and `texample -g` (verifies README code samples compile/run). Keep README examples runnable.
 
-Node ≥ 18 is supported (CI matrix: 18, 20, 22, 24, latest). `.nvmrc` pins the local dev version.
+Node ≥ 20 is supported (CI matrix: 20, 22, 24, latest). `.nvmrc` pins the local dev version.
 
 ## Architecture
 

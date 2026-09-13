@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## v8.0.1 - 2026-09-13
+
+- use nullish coalescing and optional chaining internally, browser bundle now requires ES2020
+- replace `markdown-toc` script with `@0dep/toc`
+- drop build with node v18 due to dev deps
 
 ## v8.0.0 - 2026-04-24
 

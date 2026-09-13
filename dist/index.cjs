@@ -8,7 +8,7 @@
  */
 const kNativeDate = Symbol.for('chronokinesis native date');
 
-const NativeDate = Date[kNativeDate] || Date;
+const NativeDate = Date[kNativeDate] ?? Date;
 const nativeGetTimezoneOffset = NativeDate.prototype.getTimezoneOffset;
 
 /* c8 ignore start -- environment-capability guards; false branches only hit in browser (isomorphic test) */
@@ -20,9 +20,9 @@ const nativePerformanceNow = nativePerformance && typeof nativePerformance.now =
 
 // Anchor native perf.now against native hrtime at module load so that later reads
 // can reconstruct real native perf.now even when process.hrtime has been swapped
-// (Node <24 wires performance.now to process.hrtime internally).
-const perfAnchorMs = nativePerformanceNow ? nativePerformanceNow.call(nativePerformance) : 0;
-const hrtimeAnchorNs = nativeHrtimeBigint ? nativeHrtimeBigint.call(nativeProcess) : 0n;
+// (Node <22 wires performance.now to process.hrtime internally).
+const perfAnchorMs = nativePerformanceNow?.call(nativePerformance) ?? 0;
+const hrtimeAnchorNs = nativeHrtimeBigint?.call(nativeProcess) ?? 0n;
 /* c8 ignore stop */
 
 let freezedAt = null;
@@ -108,9 +108,6 @@ function travel(...args) {
     if (nativePerformanceNow) freezedPerformanceNow = nativePerformanceNowFromHrtime() + performanceNowOffset;
   }
 
-  // Capture the wall-clock anchor as late as possible so the first new Date()
-  // after travel() still matches the target on slow runners (fewer ms boundaries
-  // crossed between this line and the caller's next read).
   traveledTo = targetMs;
   started = NativeDate.now();
 
@@ -210,10 +207,6 @@ function currentMockedMs() {
 }
 
 function nativePerformanceNowFromHrtime() {
-  // Older Node (<24) wires performance.now() to process.hrtime internally, so
-  // calling nativePerformanceNow directly would pick up our hrtime swap and
-  // double-shift. Rebuild perf.now from the preserved hrtime.bigint reference,
-  // anchored to a native perf.now reading captured at module load.
   if (nativeHrtimeBigint) {
     const elapsedNs = nativeHrtimeBigint.call(nativeProcess) - hrtimeAnchorNs;
     return perfAnchorMs + Number(elapsedNs) / 1_000_000;
@@ -234,8 +227,7 @@ function shiftAndLockFakeClocks(deltaMs) {
 }
 
 function fakeHrtimeNs() {
-  if (freezedHrtimeNs !== null) return freezedHrtimeNs;
-  return nativeHrtimeBigint.call(nativeProcess) + hrtimeOffset;
+  return freezedHrtimeNs ?? nativeHrtimeBigint.call(nativeProcess) + hrtimeOffset;
 }
 
 function fakeHrtime(prev) {
@@ -257,8 +249,7 @@ fakeHrtime.bigint = function fakeHrtimeBigint() {
 };
 
 function fakePerformanceNow() {
-  if (freezedPerformanceNow !== null) return freezedPerformanceNow;
-  return nativePerformanceNowFromHrtime() + performanceNowOffset;
+  return freezedPerformanceNow ?? nativePerformanceNowFromHrtime() + performanceNowOffset;
 }
 
 function instantiate(type, args) {

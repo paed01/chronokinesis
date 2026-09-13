@@ -28,7 +28,7 @@ Mock time and date for traveling and freezing. Inspired and borrowed from [timek
 - [Caveats when mocking high-resolution clocks](#caveats-when-mocking-high-resolution-clocks)
 - [Acknowledgements](#acknowledgements)
 
-<!-- tocstop -->
+<!-- /toc -->
 
 ## Introduction
 
