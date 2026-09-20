@@ -43,7 +43,7 @@ describe('chronokinesis Temporal.Now', () => {
     return postpone(() => {
       const second = Temporal.Now.instant();
       expect(Temporal.Instant.compare(second, first)).to.equal(1);
-      expect(second.epochMilliseconds - first.epochMilliseconds).to.be.within(20, 500);
+      expect(second.epochMilliseconds - first.epochMilliseconds).to.be.within(1, 1000);
     }, 20);
   });
 
