@@ -17,6 +17,10 @@ const nativeHrtime = nativeProcess && typeof nativeProcess.hrtime === 'function'
 const nativeHrtimeBigint = nativeHrtime && typeof nativeHrtime.bigint === 'function' ? nativeHrtime.bigint : null;
 const nativePerformance = typeof performance !== 'undefined' ? performance : null;
 const nativePerformanceNow = nativePerformance && typeof nativePerformance.now === 'function' ? nativePerformance.now : null;
+// Native Temporal (Node >= 26) reads the OS clock directly in Temporal.Now, so any Temporal global
+// present at load is patched in place alongside Date. Polyfills built on Date.now() would work unpatched.
+const nativeTemporal = typeof Temporal !== 'undefined' && typeof Temporal.Now === 'object' ? Temporal : null;
+const nativeTemporalNow = nativeTemporal && snapshotTemporalNow(nativeTemporal.Now);
 
 // Anchor native perf.now against native hrtime at module load so that later reads
 // can reconstruct real native perf.now even when process.hrtime has been swapped
@@ -186,6 +190,7 @@ function useFakeDate() {
   if (nativePerformanceNow) {
     Object.defineProperty(nativePerformance, 'now', { value: fakePerformanceNow, configurable: true, writable: true });
   }
+  if (nativeTemporalNow) assignTemporalNow(nativeTemporal.Now, fakeTemporalNow());
 }
 
 function useNativeDate() {
@@ -194,6 +199,7 @@ function useNativeDate() {
   if (nativePerformanceNow) {
     Object.defineProperty(nativePerformance, 'now', { value: nativePerformanceNow, configurable: true, writable: true });
   }
+  if (nativeTemporalNow) assignTemporalNow(nativeTemporal.Now, {});
 }
 
 function time() {
@@ -250,6 +256,43 @@ fakeHrtime.bigint = function fakeHrtimeBigint() {
 
 function fakePerformanceNow() {
   return freezedPerformanceNow ?? nativePerformanceNowFromHrtime() + performanceNowOffset;
+}
+
+function snapshotTemporalNow(Now) {
+  const snapshot = {};
+  for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(Now))) {
+    if (typeof descriptor.value === 'function') snapshot[key] = descriptor;
+  }
+  return snapshot;
+}
+
+function assignTemporalNow(Now, methods) {
+  for (const [key, descriptor] of Object.entries(nativeTemporalNow)) {
+    Object.defineProperty(Now, key, { ...descriptor, value: methods[key] ?? descriptor.value });
+  }
+}
+
+function fakeTemporalNow() {
+  return {
+    instant: fakeTemporalInstant,
+    timeZoneId: fakeTemporalTimeZoneId,
+    zonedDateTimeISO: fakeTemporalZonedDateTimeISO,
+    plainDateTimeISO: (timeZone) => fakeTemporalZonedDateTimeISO(timeZone).toPlainDateTime(),
+    plainDateISO: (timeZone) => fakeTemporalZonedDateTimeISO(timeZone).toPlainDate(),
+    plainTimeISO: (timeZone) => fakeTemporalZonedDateTimeISO(timeZone).toPlainTime(),
+  };
+}
+
+function fakeTemporalInstant() {
+  return nativeTemporal.Instant.fromEpochMilliseconds(currentMockedMs());
+}
+
+function fakeTemporalTimeZoneId() {
+  return iana ?? nativeTemporalNow.timeZoneId.value.call(nativeTemporal.Now);
+}
+
+function fakeTemporalZonedDateTimeISO(timeZone) {
+  return fakeTemporalInstant().toZonedDateTimeISO(timeZone ?? fakeTemporalTimeZoneId());
 }
 
 function instantiate(type, args) {

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## v8.1.0 - 2026-09-20
+
+- mock native `Temporal.Now` (Node >= 26) alongside `Date`, `Temporal.Now.timeZoneId()` honours timezone travel
+
 ## v8.0.1 - 2026-09-13
 
 - use nullish coalescing and optional chaining internally, browser bundle now requires ES2020

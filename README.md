@@ -24,6 +24,7 @@ Mock time and date for traveling and freezing. Inspired and borrowed from [timek
   - [Nodejs require](#nodejs-require)
   - [Browser (UMD)](#browser-umd)
 - [High-resolution clocks](#high-resolution-clocks)
+- [Temporal](#temporal)
 - [chronokinesis vs `node:test` mock timers](#chronokinesis-vs-nodetest-mock-timers)
 - [Caveats when mocking high-resolution clocks](#caveats-when-mocking-high-resolution-clocks)
 - [Acknowledgements](#acknowledgements)
@@ -132,7 +133,7 @@ setTimeout(function () {
 }, 1500);
 ```
 
-When used in combination with [`freeze`](#freeze) the time is still frozen but at the travelled time().
+When used in combination with [`freeze`](#freezeargs) the time is still frozen but at the travelled time().
 
 ```javascript
 import * as ck from 'chronokinesis';
@@ -293,9 +294,27 @@ console.log(performance.now() - basePerf); //                    ≈ 1000 (ms)
 ck.reset();
 ```
 
+## Temporal
+
+When the runtime ships a native `Temporal` global (Node ≥ 26), the methods on `Temporal.Now` are patched in place while timekeeping is active, so `Temporal.Now.instant()` and friends follow the same frozen or travelled clock as `Date.now()`. `Temporal.Now.timeZoneId()` returns the travelled IANA zone while a [timezone traveller](#timezonetimezone-args) is active, so the zone-less variants (`zonedDateTimeISO()`, `plainDateTimeISO()`, `plainDateISO()`, `plainTimeISO()`) resolve in that zone. `reset()` restores the native methods by identity.
+
+Temporal polyfills that build `Temporal.Now` on top of `Date.now()` need no patching and keep working on older Node versions. Polyfills that prefer the native global when present pick up the mock automatically.
+
+```js
+import * as ck from 'chronokinesis';
+
+ck.timezone('Asia/Tokyo').freeze(1980, 0, 1, 12, 0);
+
+console.log(Temporal.Now.timeZoneId()); //                 Asia/Tokyo
+console.log(Temporal.Now.plainDateTimeISO().toString()); // 1980-01-01T12:00:00
+console.log(Temporal.Now.instant().epochMilliseconds === Date.now()); // true
+
+ck.reset();
+```
+
 ## chronokinesis vs `node:test` mock timers
 
-chronokinesis mocks **clocks only** — `Date`, `process.hrtime`, `performance.now`. Timers (`setTimeout`, `setInterval`, `setImmediate`) still run on the real wall clock; a `setTimeout(fn, 10)` under `freeze()` still fires ~10ms later in real time.
+chronokinesis mocks **clocks only** — `Date`, `process.hrtime`, `performance.now`, and native `Temporal.Now`. Timers (`setTimeout`, `setInterval`, `setImmediate`) still run on the real wall clock; a `setTimeout(fn, 10)` under `freeze()` still fires ~10ms later in real time.
 
 Node's built-in `node:test` provides `mock.timers` which is different: it mocks both the clock **and** the timer queue, and `mock.timers.tick(ms)` synchronously advances time and fires any timers scheduled within that window — no real waiting required.
 

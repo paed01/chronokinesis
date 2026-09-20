@@ -78,6 +78,7 @@ export default [
         ...globals.es6,
         process: 'readonly',
         performance: 'readonly',
+        Temporal: 'readonly',
       },
     },
     rules: {
